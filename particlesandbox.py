@@ -7,94 +7,89 @@ import json
 # local
 from simulation import run_simulation
 
-def wizard():
-	print("*+>~.. PARTICLE SANDBOX ..~<+*\n\n")
+def modus_operandi():
+    print("|-----Modus Operandi-----|\n")
 
-	print("----Modus Operandi----\n")
-	global modus_operandi
-	get_modus_operandi_msg_1()
-	while True:
-		response = input("Is this the modus operandi you'd like to use?\n\nPlease say 'Yes' or 'No'\n>")
+    while True:
+        with open("config.json") as config:
+            print(config.read())
 
-		if handle_yn_response(response) != "neither":
-			# if they answered "neither" they need to try again		
-			break
+        response = input("Is this the modus operandi you'd like to use?\n\nPlease say 'Yes' or 'No'\n>")
 
-	# should be able to take a file or a string
-	while True:
-		# keep my url in user_config.json?
-		# print("Opening initial_state.json")
-		
-		# state = input("What would you like to use as your initial state? /Users/maggiezirnhelt/private/ParticleSandbox_CLI/initial_state.json\r")
+        if handle_yn_response(response, "config.json") != "neither":
+            # if they answered "neither" they need to try again
+            break
 
-		#state = input("What would you like to use as your initial state?\n\n")		
+        modus_operandi = config.read()
 
-		print("----Initial State----\n")
+    print("\n|------------------------|\n\n")
 
-		state = "/Users/maggiezirnhelt/private/ParticleSandbox_CLI/initial_state.json"
-		with open(state) as initial_state:
-			print(initial_state.read())
+    return modus_operandi
 
-		response = input("Is this the initial state you'd like to use?\n\nPlease say 'Yes' or 'No'\n>")
+def initial_state():
+    print("|-------Initial State-------|\n")
 
-		error = validate_state_syntax(state)
+    while True:
+        with open("initial_state.json") as initial_state:
+            print(initial_state.read())
 
-		if not error:
-			break
-		else:
-			print(f'Invalid state: {error}')
+        response = input("Is this the initial state you'd like to use?\n\nPlease say 'Yes' or 'No'\n>")
 
-	while True:
-		global steps
-		steps = input("How many steps in time would you like to take?\n")
-		error = validate_steps(steps)
+        if handle_yn_response(response, "initial_state.json") != "neither":
+                        # if they answered "neither" they need to try again
+            with open("initial_state.json") as initial_state:
+                initial_state = initial_state.read()
+            error = validate_state_syntax(initial_state)
+            if not error:
+                break
+            else:
+                print(f'Invalid state: {error}')
 
-		if not error:
-			break
-		else:
-			print(f'Invalid number or steps: {error}')			 
+    print("\n|------------------------|\n\n")
 
-	while True:
-		direction = input("Would you like to move forward or backward in time?\n")
-	
-		global forward	
-		if direction.lower() == "forward":
-			forward = True 
-			return
-		elif direction.lower() == "backward":
-			forward = False
-			return
-		else:
-			print("Please say 'Forward' or 'Backward'")
+    return initial_state
 
-def get_modus_operandi_msg_1():
-	with open("config.json") as config:
-    		print(config.read())
+def steps():
+    print("|----------Steps----------|\n")
 
+    while True:
+        steps = input("How many steps in time would you like to take?\n")
 
-def get_modus_operandi_msg():
-	question = "Is this the modus operandi you'd like to use?\n\n"
-	status, modus_operandi = subprocess.getstatusoutput(f'cat config.json\n\n')
-	#modus_operandi = "[2 up + 1 down = 1 proton,\n 1 up + 2 down = 1 neutron]\n\n"
-	return question + ' ' + modus_operandi
+        error = validate_steps(steps)
+        if not error:
+            break
+        else:
+            print(f'Invalid number or steps: {error}')
+
+    print("\n|------------------------|\n\n")
+
+    return steps
+
+def direction():
+    print("|--------Direction--------|\n")
+
+    while True:
+        direction = input("Would you like to move forward or backward in time?\n")
+
+        d = direction.lower()
+        if d == "forward" or d == ">":
+            forward = True
+            return
+        elif d == "backward" or d == "<":
+            forward = False
+            return
+        else:
+            print("Please say 'Forward' or 'Backward'")
+
+    print("\n|------------------------|\n\n")
 
 def validate_state_syntax(state):
 	# this feels dangerous but i can't tell why...
-	os.system(f'sudo open {state}')
+	# os.system(f'vi {state}')
 	# os.system(f'sudo /System/Applications/TextEdit.app/Contents/MacOS/TextEdit {state}')
 	
-	while True:
-		done = input("When you've saved and closed your state file, please say 'Done'\n\n")
-
-		if done.lower() == "done":
-			break
-		else:
-        		print("If you're done you gotta say 'Done'")	
-
-	global initial_state
-	status, initial_state = subprocess.getstatusoutput(f'cat {state}\\n\n')
-
-	status, schema = subprocess.getstatusoutput('cat schema.json\n\n')
+	with open("schema.json") as schema:
+		schema = schema.read()
 
 	# check things with schema and type(), implement later
 
@@ -104,16 +99,28 @@ def validate_steps(steps):
 	# this isnt implemented yet
 	return ""
 
-def handle_yn_response(response):
-	if response.lower() == "yes":
-                return "yes"
-        elif response.lower() == "no":
-                print("Well shoot. Changing it at this point isn't implemented\n")
-                # open the file, have then write to it then save and close it
-                return "no"
-        else:
-                print("Please say 'Yes' or 'No'\n")
+def handle_yn_response(response, filename):
+	r = response.lower()
+	if r == "yes" or r == "y":
+		return "yes"
+	elif r == "no" or r == "n":
+		print("Well shoot. Changing it at this point isn't implemented\n")
+		# open the file, have then write to it then save and close it
+		return "no"
+	else:
+		print("Please say 'Yes' or 'No'\n")
 		return "neither"
 
+def wizard():
+    print("*+>~.. PARTICLE SANDBOX ..~<+*\n\n")
+
+    m = modus_operandi()
+    i = initial_state()
+    s = steps()
+    d = direction()
+
+    print("*+>~.. *+>~.......~<+* ..~<+*\n\n")
+
+    run_simulation(modus_operandi, initial_state, steps, forward)
+
 wizard()
-run_simulation(modus_operandi, initial_state, steps, forward)

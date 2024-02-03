@@ -73,8 +73,10 @@ def direction():
         d = direction.lower()
         if d == "forward" or d == "f" or d == ">":
             forward = True
+            break
         elif d == "backward" or d == "b" or d == "<":
             forward = False
+            break
         else:
             print("Please say 'Forward' or 'Backward'")
     print("\n|------------------------|\n\n")
@@ -111,13 +113,20 @@ def handle_yn_response(response, filename):
 def wizard():
     print("*+>~.. PARTICLE SANDBOX ..~<+*\n\n")
 
-    m = modus_operandi()
-    i = initial_state()
-    s = steps()
-    f = direction()
+#    m = modus_operandi()
+#    i = initial_state()
+#    s = steps()
+#    f = direction()
+
+    m = 1
+    i = 1
+    s = 2
+    f = 5
+
+    r = run_simulation(m, i, s, f)
+    print("simulation result is\n")
+    print(str(r))
 
     print("*+>~.. *+>~.......~<+* ..~<+*\n\n")
-
-    run_simulation(m, i, s, f)
 
 wizard()

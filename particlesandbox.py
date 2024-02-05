@@ -6,6 +6,7 @@ import json
 
 # local
 from simulation import run_simulation
+import particle
 
 def modus_operandi():
     print("|-----Modus Operandi-----|\n")

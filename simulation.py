@@ -31,14 +31,8 @@ def run_simulation(modus_operandi, initial_state, time, forward):
     # use trotterization to solve the problem
     trotter = TrotterQRTE()
     result = trotter.evolve(problem)
-    # check out the evolved state in circuit form
-    circuit = result.evolved_state
-    circuit.draw('mpl')
-    print(circuit)
-    # can make the circuit into a statevector
-    statevector = Statevector(circuit)
-    # and the statevector into a set of particles!
-    final_particles = translate_statevector_to_particles(statevector)
+    # turn the result into an array of particles
+    final_particles = make_result_into_particles(result)
     # and the set of particles into json!s
     final_state = translate_particles_to_final_state(final_particles)
     # write the result to the `final_state.json` file
@@ -74,6 +68,17 @@ def make_time_evolution_problem(hamiltonian, particles, time):
     initial_state = translate_particles_to_statevector(particles)
     problem = TimeEvolutionProblem(hamiltonian, initial_state=initial_state, time=final_time)
     return problem
+
+def make_result_into_particles(result):
+    # check out the evolved state in circuit form
+    circuit = result.evolved_state
+    circuit.draw('mpl')
+    print(circuit)
+    # can make the circuit into a statevector
+    statevector = Statevector(circuit)
+    # and the statevector into a set of particles!
+    final_particles = translate_statevector_to_particles(statevector)
+    return final_particles
 
 # the tutorial calls the return value of this fn the hamiltonian
 def make_sparse_pauli_op(particle, time):

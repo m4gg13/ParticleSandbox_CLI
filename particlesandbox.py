@@ -34,9 +34,7 @@ def initial_state():
     while True:
         with open("initial_state.json") as initial_state:
             print(initial_state.read())
-
         response = input("Is this the initial state you'd like to use?\n\nPlease say 'Yes' or 'No'\n>")
-
         if handle_yn_response(response, "initial_state.json") != "neither":
                         # if they answered "neither" they need to try again
             with open("initial_state.json") as initial_state:
@@ -52,10 +50,8 @@ def initial_state():
 def steps():
     print("|----------Steps----------|\n")
     global steps
-
     while True:
         steps = input("How many steps in time would you like to take?\n>")
-
         error = validate_steps(steps)
         if not error:
             break
@@ -67,7 +63,6 @@ def steps():
 def direction():
     print("|--------Direction--------|\n")
     global forward
-
     while True:
         direction = input("Would you like to move forward or backward in time?\n>")
 
@@ -84,15 +79,10 @@ def direction():
     return forward
 
 def validate_state_syntax(state):
-	# this feels dangerous but i can't tell why...
-	# os.system(f'vi {state}')
-	# os.system(f'sudo /System/Applications/TextEdit.app/Contents/MacOS/TextEdit {state}')
-	
 	with open("schema.json") as schema:
 		schema = schema.read()
-
+    # TODO
 	# check things with schema and type(), implement later
-
 	return ""
 
 def validate_steps(steps):
@@ -113,16 +103,13 @@ def handle_yn_response(response, filename):
 
 def wizard():
     print("*+>~.. PARTICLE SANDBOX ..~<+*\n\n")
-
     m = 1
     i = "{ [ \"up\": 2, \"down\": 1 ] }"
     s = 2
     f = 5
-
     r = run_simulation(m, i, s, f)
     print("\n")
     print(str(r))
-
     print("*+>~.. *+>~.......~<+* ..~<+*\n\n")
 
 wizard()

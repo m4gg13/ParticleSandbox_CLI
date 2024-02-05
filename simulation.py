@@ -17,6 +17,8 @@ import particle
 def run_simulation(modus_operandi, initial_state, time, forward):
     # use the initial state to determine what particles to include
     # ... and where?
+    with open("initial_state.json") as initial_state:
+        print(initial_state.read())
     initial_particles = translate_initial_state_to_particles(initial_state)
     composite_hamiltonian = 0
     for particle in initial_particles:
@@ -25,13 +27,14 @@ def run_simulation(modus_operandi, initial_state, time, forward):
         # add the hamiltonian for that particle to the composite
         composite_hamiltonian += hamiltonian
     # use the composite hamiltonian and the particles to make the time evolution problem
-    problem = make_time_evolution_problem(composite_hamiltonian, particles, time)
+    problem = make_time_evolution_problem(composite_hamiltonian, initial_particles, time)
     # use trotterization to solve the problem
     trotter = TrotterQRTE()
     result = trotter.evolve(problem)
     # check out the evolved state in circuit form
     circuit = result.evolved_state
     circuit.draw('mpl')
+    print(circuit)
     # can make the circuit into a statevector
     statevector = Statevector(circuit)
     # and the statevector into a set of particles!
@@ -42,7 +45,7 @@ def run_simulation(modus_operandi, initial_state, time, forward):
     with open("final_state.json") as final_state:
         final_state = final_state.read()
     # return something?
-    return circuit
+    return final_state
 
 def count_qubits_required():
     # TODO
@@ -61,7 +64,7 @@ def translate_initial_state_to_particles(initial_state):
 
 def translate_particles_to_final_state(particles):
     # TODO
-    final_state = "{ [ \"up\": 2, \"down\": 1 ] }"
+    final_state = "{ [ \"proton\": 1 ] }"
     return final_state
 
 # algorithm things
@@ -139,7 +142,7 @@ number = 1
 mass = 2
 coordinate = 3
 particle = particle.Particle(number, mass, coordinate)
-print(get_kinetic_energy(particle, 2))
+#print(get_kinetic_energy(particle, 2))
 
 # notes
 # ----------------------------- https://phys.libretexts.org/Bookshelves/Quantum_Mechanics/Introductory_Quantum_Mechanics_(Fitzpatrick)/05%3A_Multi-Particle_Systems

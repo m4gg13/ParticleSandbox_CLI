@@ -17,9 +17,9 @@ import particle
 def run_simulation(modus_operandi, initial_state, time, forward):
     # use the initial state to determine what particles to include
     # ... and where?
-    particles = translate_initial_state_to_particles(initial_state)
+    initial_particles = translate_initial_state_to_particles(initial_state)
     composite_hamiltonian = 0
-    for particle in particles:
+    for particle in initial_particles:
         # use the energies to make the hamiltonian
         hamiltonian = make_sparse_pauli_op(particle, time)
         # add the hamiltonian for that particle to the composite
@@ -32,6 +32,12 @@ def run_simulation(modus_operandi, initial_state, time, forward):
     # check out the evolved state in circuit form
     circuit = result.evolved_state
     circuit.draw('mpl')
+    # can make the circuit into a statevector
+    statevector = Statevector(circuit)
+    # and the statevector into a set of particles!
+    final_particles = translate_statevector_to_particles(statevector)
+    # and the set of particles into json!s
+    final_state = translate_particles_to_final_state(final_particles)
     # write the result to the `final_state.json` file
     with open("final_state.json") as final_state:
         final_state = final_state.read()
@@ -52,6 +58,11 @@ def translate_initial_state_to_particles(initial_state):
     # .Particle(number, mass, coordinate)
     particle2 = particle
     return [particle1, particle2]
+
+def translate_particles_to_final_state(particles):
+    # TODO
+    final_state = "{ [ \"up\": 2, \"down\": 1 ] }"
+    return final_state
 
 # algorithm things
 
@@ -79,6 +90,13 @@ def translate_particles_to_statevector(particles):
     # First spin up, second spin down
     # Note: the labels are interpreted from right to left!
     return Statevector.from_label('10')
+
+def translate_statevector_to_particles(statevector):
+    # TODO
+    # somehow translate the statevector into a set of particles
+    particle1 = particle
+    particle2 = particle
+    return [particle1, particle2]
 
 # energy things
 def get_kinetic_energy(particle, time):

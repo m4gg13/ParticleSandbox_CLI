@@ -8,6 +8,7 @@ import json
 from simulation import run_simulation
 import particle
 
+# print about each of the input types
 def modus_operandi():
     print("|-----Modus Operandi-----|\n")
     global modus_operandi
@@ -78,6 +79,7 @@ def direction():
     print("\n|------------------------|\n\n")
     return forward
 
+# validate and handle various kinds of input to prevent hax!!!
 def validate_state_syntax(state):
 	with open("schema.json") as schema:
 		schema = schema.read()
@@ -101,6 +103,7 @@ def handle_yn_response(response, filename):
 		print("Please say 'Yes' or 'No'\n")
 		return "neither"
 
+# the one that prints everything
 def wizard():
     print("*+>~.. PARTICLE SANDBOX ..~<+*\n\n")
     m = 1
@@ -112,4 +115,7 @@ def wizard():
     print(str(r))
     print("*+>~.. *+>~.......~<+* ..~<+*\n\n")
 
+# main
 wizard()
+
+

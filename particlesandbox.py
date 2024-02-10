@@ -3,9 +3,10 @@ import sys
 import os
 import subprocess
 import json
+import re
 
 # local
-from simulation import run_simulation
+from simulation import *
 import particle
 
 # print about each of the input types
@@ -79,6 +80,32 @@ def direction():
     print("\n|------------------------|\n\n")
     return forward
 
+# scrub
+
+# this isn't used. maybe someday
+# basically just add escapes to any double quotes within the string
+def scrub_initial_state(initial_state):
+    # first, remove newlines
+    initial_state = initial_state.replace("\n", "")
+    scrubbed_initial_state = initial_state.strip()
+    # then find the first index of a double quote
+    double_quote_index = initial_state.find('"')
+    # a -1 means that there aren't any more double quotes in the given string
+    while double_quote_index != -1:
+        # place an escape character right before the double quote and put the string back together
+        start = scrubbed_initial_state[:double_quote_index]
+        end = scrubbed_initial_state[double_quote_index:]
+        scrubbed_initial_state = start + "\\" + end
+        # now we want to find the next double quote so lets look just beyond where we found the previous
+        start_next_double_quote_index = double_quote_index + 4
+        # don't want to walk off the end of the string though
+        if start_next_double_quote_index > len(scrubbed_initial_state):
+            break
+        # like we said we'll only look at the end of the string
+        # and if we find one we'll use it for the next iteration otherwise it'll be -1
+        double_quote_index = scrubbed_initial_state.find('"', start_next_double_quote_index)
+    return scrubbed_initial_state
+
 # validate and handle various kinds of input to prevent hax!!!
 def validate_state_syntax(state):
 	with open("schema.json") as schema:
@@ -88,7 +115,7 @@ def validate_state_syntax(state):
 	return ""
 
 def validate_steps(steps):
-	# this isnt implemented yet
+	# TODO
 	return ""
 
 def handle_yn_response(response, filename):
@@ -106,13 +133,17 @@ def handle_yn_response(response, filename):
 # the one that prints everything
 def wizard():
     print("*+>~.. PARTICLE SANDBOX ..~<+*\n\n")
-    m = 1
-    i = "{ [ \"up\": 2, \"down\": 1 ] }"
-    s = 2
-    f = 5
-    r = run_simulation(m, i, s, f)
+    # get the initial state
+    i = initial_state()
+    particles = translate_initial_state_to_particles(i)
+    # and print out whats going on there
+    for p in particles:
+        print(str(p.number))
+    # get the final state
+    final_state = translate_particles_to_final_state(particles)
+    # and print out whats going in in there!
+    print(final_state)
     print("\n")
-    print(str(r))
     print("*+>~.. *+>~.......~<+* ..~<+*\n\n")
 
 # main

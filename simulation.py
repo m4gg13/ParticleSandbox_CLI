@@ -46,19 +46,31 @@ def count_qubits_required():
     return 2
 
 def translate_initial_state_to_particles(initial_state):
-    # TODO
-    number = 1
-    mass = 2
-    coordinate = 3
-    # .Particle(number, mass, coordinate)
-    particle1 = particle
-    # .Particle(number, mass, coordinate)
-    particle2 = particle
-    return [particle1, particle2]
+    initial_state_dictionary = json.loads(initial_state)
+    keys = list(initial_state_dictionary.keys())
+    particles = []
+    for key in keys:
+        match key:
+            case "up":
+                up = particle.UpQuark(42)
+                particles.append(up)
+            case "down":
+                down = particle.DownQuark(50)
+                particles.append(down)
+            case "proton":
+                proton = particle.Proton(300)
+    return particles
 
 def translate_particles_to_final_state(particles):
-    # TODO
-    final_state = "{ [ \"proton\": 1 ] }"
+    final_state_dictionary = {}
+    for p in particles:
+        key = p.name
+        if key in final_state_dictionary.keys():
+            count = final_state_dictionary[key]
+            final_state_dictionary[key] = count + 1
+        else:
+            final_state_dictionary[key] = 1
+    final_state = json.dumps(final_state_dictionary)
     return final_state
 
 # algorithm things
@@ -80,17 +92,6 @@ def make_result_into_particles(result):
     final_particles = translate_statevector_to_particles(statevector)
     return final_particles
 
-# the tutorial calls the return value of this fn the hamiltonian
-def make_sparse_pauli_op(particle, time):
-    coordinate = particle.coordinate
-    mass = particle.mass
-    kinetic = get_kinetic_energy(particle, time) # ("ZX", [n_i], 1)
-    potential = get_potential_energy(particle, time) # ("Y", [n_i], 1)
-    count = count_qubits_required()
-    # example: SparsePauliOp.from_sparse_list([("ZX", [1, 4], 1), ("YY", [0, 3], 2)], num_qubits=5)
-    op = SparsePauliOp.from_sparse_list([kinetic, potential], num_qubits=count)
-    return op.simplify()
-
 def translate_particles_to_statevector(particles):
     # TODO
     # somehow translate the particles into a spin string
@@ -107,6 +108,18 @@ def translate_statevector_to_particles(statevector):
     return [particle1, particle2]
 
 # energy things
+
+# the tutorial calls the return value of this fn the hamiltonian
+def make_sparse_pauli_op(particle, time):
+    coordinate = particle.coordinate
+    mass = particle.mass
+    kinetic = get_kinetic_energy(particle, time) # ("ZX", [n_i], 1)
+    potential = get_potential_energy(particle, time) # ("Y", [n_i], 1)
+    count = count_qubits_required()
+    # example: SparsePauliOp.from_sparse_list([("ZX", [1, 4], 1), ("YY", [0, 3], 2)], num_qubits=5)
+    op = SparsePauliOp.from_sparse_list([kinetic, potential], num_qubits=count)
+    return op.simplify()
+
 def get_kinetic_energy(particle, time):
     # the param `particle` holds things like the particle's
     # number, mass and momentum... and coordinate(?)
@@ -143,11 +156,16 @@ def partial_over_partial(coordinate):
     return 1
 
 # main
-number = 1
-mass = 2
-coordinate = 3
-particle = particle.Particle(number, mass, coordinate)
+#number = 1
+#mass = 2
+#coordinate = 3
+#particle = particle.Particle(number, mass, coordinate)
+#print(particle.mass)
 #print(get_kinetic_energy(particle, 2))
+#initial_state = "{ [ \"proton\": 1 ] }"
+#particles = translate_initial_state_to_particles(initial_state)
+#for p in particles:
+#    print(p.number)
 
 # notes
 # ----------------------------- https://phys.libretexts.org/Bookshelves/Quantum_Mechanics/Introductory_Quantum_Mechanics_(Fitzpatrick)/05%3A_Multi-Particle_Systems

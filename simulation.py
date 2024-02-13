@@ -16,10 +16,12 @@ import particle
 # logistical things
 def run_simulation(modus_operandi, initial_state, time, forward):
     # use the initial state to determine what particles to include
-    # ... and where?
-    with open("initial_state.json") as initial_state:
-        print(initial_state.read())
+    print("read in initial state\n")
+#    with open("initial_state.json") as initial_state_file:
+#        print(initial_state_file.read())
+#        initial_state = initial_state_file.read()
     initial_particles = translate_initial_state_to_particles(initial_state)
+    print("get the composite hamiltonian of the initial particles\n")
     composite_hamiltonian = 0
     for particle in initial_particles:
         # use the energies to make the hamiltonian
@@ -27,18 +29,26 @@ def run_simulation(modus_operandi, initial_state, time, forward):
         # add the hamiltonian for that particle to the composite
         composite_hamiltonian += hamiltonian
     # use the composite hamiltonian and the particles to make the time evolution problem
+    print("create the time evolution problem\n")
+    print(composite_hamiltonian)
     problem = make_time_evolution_problem(composite_hamiltonian, initial_particles, time)
     # use trotterization to solve the problem
+    print("evolve the problem")
     trotter = TrotterQRTE()
     result = trotter.evolve(problem)
+    evolved_state = Statevector(result.evolved_state)
+    # Dictionary of probabilities
+    amplitudes_dict = evolved_state.probabilities_dict()
+    print("amplitudes_dict\n")
+    print(amplitudes_dict)
     # turn the result into an array of particles
     final_particles = make_result_into_particles(result)
     # and the set of particles into json!s
-    final_state = translate_particles_to_final_state(final_particles)
+#    final_state = translate_particles_to_final_state(final_particles)
     # write the result to the `final_state.json` file
     with open("final_state.json") as final_state:
         final_state = final_state.read()
-    # return something?
+    print("return the final state\n")
     return final_state
 
 def count_qubits_required():
@@ -46,19 +56,20 @@ def count_qubits_required():
     return 2
 
 def translate_initial_state_to_particles(initial_state):
+    print(initial_state)
     initial_state_dictionary = json.loads(initial_state)
     keys = list(initial_state_dictionary.keys())
     particles = []
     for key in keys:
         match key:
             case "up":
-                up = particle.UpQuark(42)
+                up = particle.UpQuark(1)
                 particles.append(up)
             case "down":
-                down = particle.DownQuark(50)
+                down = particle.DownQuark(1)
                 particles.append(down)
             case "proton":
-                proton = particle.Proton(300)
+                proton = particle.Proton(1)
     return particles
 
 def translate_particles_to_final_state(particles):
@@ -78,6 +89,8 @@ def translate_particles_to_final_state(particles):
 def make_time_evolution_problem(hamiltonian, particles, time):
     final_time = time
     initial_state = translate_particles_to_statevector(particles)
+    print("initial state vector\n")
+    print(initial_state)
     problem = TimeEvolutionProblem(hamiltonian, initial_state=initial_state, time=final_time)
     return problem
 
@@ -93,16 +106,23 @@ def make_result_into_particles(result):
     return final_particles
 
 def translate_particles_to_statevector(particles):
-    # TODO
+    # REVIEW
     # somehow translate the particles into a spin string
+    # gonna figure out what's right experimentally for this part
     #
     # First spin up, second spin down
     # Note: the labels are interpreted from right to left!
-    return Statevector.from_label('10')
+    count = len(particles)
+    spins = ""
+    for i in range(count):
+        spins = spins + "0"
+    return Statevector.from_label(spins)
 
 def translate_statevector_to_particles(statevector):
     # TODO
     # somehow translate the statevector into a set of particles
+    print("statevector:")
+    print(statevector)
     particle1 = particle
     particle2 = particle
     return [particle1, particle2]

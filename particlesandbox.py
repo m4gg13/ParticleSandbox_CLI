@@ -135,12 +135,13 @@ def wizard():
     print("*+>~.. PARTICLE SANDBOX ..~<+*\n\n")
     # get the initial state
     i = initial_state()
-    particles = translate_initial_state_to_particles(i)
+#    particles = translate_initial_state_to_particles(i)
     # and print out whats going on there
-    for p in particles:
-        print(str(p.number))
+#    for p in particles:
+#        print(str(p.number))
+    final_state = run_simulation(1, i, 1, 1)
     # get the final state
-    final_state = translate_particles_to_final_state(particles)
+#    final_state = translate_particles_to_final_state(particles)
     # and print out whats going in in there!
     print(final_state)
     print("\n")

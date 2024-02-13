@@ -13,6 +13,7 @@ class Fermion:
 class UpQuark(Fermion):
     def __init__(self, number):
         self.number = number
+        self.coordinate = 1
         self.name = "up"
         self.symbol = "u"
         self.spin = 0.5
@@ -30,6 +31,7 @@ class UpQuark(Fermion):
 class DownQuark(Fermion):
     def __init__(self, number):
         self.number = number
+        self.coordinate = 1
         self.name = "down"
         self.symbol = "d"
         self.spin = 0.5
@@ -47,6 +49,7 @@ class DownQuark(Fermion):
 class Proton:
     def __init__(self, number):
         self.number = number
+        self.coordinate = 1
         self.name = "proton"
         self.spin = 0.5
         self.charge = 1

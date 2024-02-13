@@ -51,6 +51,11 @@ def run_simulation(modus_operandi, initial_state, time, forward):
     print("return the final state\n")
     return final_state
 
+def run_simulation_matter():
+    # this version will be smart and do different things depending on the type
+    # of matter that it deals with
+    # TODO FIRST
+
 def count_qubits_required():
     # TODO
     return 2

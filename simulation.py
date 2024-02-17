@@ -13,7 +13,12 @@ from qiskit_algorithms import TrotterQRTE
 #local
 import matter
 import particle
-import atoms
+import atom
+import molecule
+
+import particleproblem
+import atomproblem
+import moleculeproblem
 
 # MARK: logistical things
 
@@ -57,15 +62,21 @@ def run_simulation_dumb(modus_operandi, initial_state, time, forward):
 
 def run_simulation(modus_operandi, initial_state, time, forward):
     # use the initial state to determine what type of matter
-    (matter_type, matter) = determine_matter_type(initial_state)
+    (matter_type, state) = determine_matter_type(initial_state)
     # based on the matter type, choose which model to use for hamiltonian
     match matter_type:
-        case "particle":
-            final_state_json = evolve_particle_problem(matter)
-        case "atom":
-            final_state_json = evolve_atom_problem(matter)
+#        case "particle":
+#            final_state_json = particleproblem.evolve(state)
+#        case "atom":
+#            final_state_json = atomproblem.evolve(state)
         case "molecule":
-            final_state_json = evolve_molecule_problem(matter)
+            final_state_json = moleculeproblem.evolve(state)
+    # TODO
+    # write out the final state to the appropriate file
+    with open("final_state.json") as final_state:
+        final_state_str = final_state.read()
+    print("return the final state\n")
+    return final_state_str
 
 def count_qubits_required():
     # TODO
@@ -86,6 +97,10 @@ def determine_matter_type(initial_state):
     matter = []
     for key in keys:
         match key:
+            case "particle":
+                p = particle.Particle(1)
+                matter.append(p)
+                matter_type = p.type
             case "up":
                 up = particle.UpQuark(1)
                 matter.append(up)
@@ -135,38 +150,6 @@ def translate_particles_to_final_state(particles):
     return final_state
 
 # MARK: algorithm things
-
-def evolve_particle_problem(matter):
-    print("get the composite hamiltonian of the initial particles\n")
-    composite_hamiltonian = 0
-    for particle in initial_particles:
-        # use the energies to make the hamiltonian
-        hamiltonian = make_sparse_pauli_op(particle, time)
-        # add the hamiltonian for that particle to the composite
-        composite_hamiltonian += hamiltonian
-    # use the composite hamiltonian and the particles to make the time evolution problem
-    print("create the time evolution problem\n")
-    print(composite_hamiltonian)
-    problem = make_time_evolution_problem(composite_hamiltonian, initial_particles, time)
-    # use trotterization to solve the problem
-    print("evolve the problem")
-    trotter = TrotterQRTE()
-    result = trotter.evolve(problem)
-    evolved_state = Statevector(result.evolved_state)
-        # dictionary of probabilities
-    amplitudes_dict = evolved_state.probabilities_dict()
-    print("amplitudes_dict\n")
-    print(amplitudes_dict)
-    # turn the result into an array of particles
-    final_particles = make_result_into_particles(result)
-    # and the set of particles into json!
-    final_state = translate_particles_to_final_state(final_particles)
-    return final_state
-
-def evolve_atom_problem(matter):
-
-def evolve_molecule_problem(matter):
-    return { "ammonia":1 }
 
 def make_time_evolution_problem(hamiltonian, particles, time):
     final_time = time

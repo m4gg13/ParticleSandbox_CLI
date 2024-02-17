@@ -1,18 +1,20 @@
 class Particle:
     def __init__(self, number, mass, coordinate):
         self.number = number
-        self.mass = 2
-        self.coordinate = 3
+        self.mass = mass
+        self.coordinate = coordinate
         self.name = "generic"
         self.type = "particle"
 
 class Fermion(Particle):
     def __init__(self, number):
+        super().__init__(number, 1, 1)
         self.fundamental_class = ["fermion"]
         self.interactions = ["strong", "weak", "electromagnetic", "gravity"]
 
 class UpQuark(Fermion):
     def __init__(self, number):
+        super().__init__(number)
         self.number = number
         self.coordinate = 1
         self.name = "up"
@@ -31,6 +33,7 @@ class UpQuark(Fermion):
 
 class DownQuark(Fermion):
     def __init__(self, number):
+        super().__init__(number)
         self.number = number
         self.coordinate = 1
         self.name = "down"
@@ -49,6 +52,7 @@ class DownQuark(Fermion):
 
 class Proton:
     def __init__(self, number):
+        super().__init__(number)
         self.number = number
         self.coordinate = 1
         self.name = "proton"

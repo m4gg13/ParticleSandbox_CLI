@@ -1,6 +1,7 @@
 class Atom:
     def __init__(self):
         self.type = "atom"
+        self.coordinates = (0, 0, 0)
 
 class Hydrogen(Atom):
     def __init__(self, number):

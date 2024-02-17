@@ -1,6 +1,6 @@
 # im sure there are things to import here
 
-def evolve_particle_problem(matter):
+def evolve(state):
     print("get the composite hamiltonian of the initial particles\n")
     composite_hamiltonian = 0
     for particle in initial_particles:

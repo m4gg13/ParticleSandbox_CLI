@@ -64,13 +64,15 @@ def run_simulation(modus_operandi, initial_state, time, forward):
     # use the initial state to determine what type of matter
     (matter_type, state) = determine_matter_type(initial_state)
     # based on the matter type, choose which model to use for hamiltonian
-    match matter_type:
+#    match matter_type:
 #        case "particle":
 #            final_state_json = particleproblem.evolve(state)
 #        case "atom":
 #            final_state_json = atomproblem.evolve(state)
-        case "molecule":
-            final_state_json = moleculeproblem.evolve(state)
+#        case "molecule":
+#            final_state_json = moleculeproblem.evolve(state)
+    # for now just run this one by default
+    final_state_json = moleculeproblem.evolve(state)
     # TODO
     # write out the final state to the appropriate file
     with open("final_state.json") as final_state:
@@ -114,7 +116,7 @@ def determine_matter_type(initial_state):
                 matter.append(proton)
                 matter_type = proton.type
             case "hydrogen":
-                hydrogen = atoms.Hydrogen(1)
+                hydrogen = atom.Hydrogen(1)
                 matter.append(hydrogen)
                 matter_type = hydrogen.type
     return_tuple = (matter_type, matter)

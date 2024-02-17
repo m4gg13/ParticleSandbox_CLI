@@ -1,3 +1,3 @@
 
-def evolve_atom_problem(matter):
+def evolve(state):
     return { "hydrogen":1 }

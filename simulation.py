@@ -11,10 +11,14 @@ from qiskit_algorithms import TimeEvolutionProblem
 from qiskit_algorithms import TrotterQRTE
 
 #local
+import matter
 import particle
+import atoms
 
-# logistical things
-def run_simulation(modus_operandi, initial_state, time, forward):
+# MARK: logistical things
+
+# this is the old one that doesnt respond to which type of matter we're dealing with
+def run_simulation_dumb(modus_operandi, initial_state, time, forward):
     # use the initial state to determine what particles to include
     print("read in initial state\n")
 #    with open("initial_state.json") as initial_state_file:
@@ -37,13 +41,13 @@ def run_simulation(modus_operandi, initial_state, time, forward):
     trotter = TrotterQRTE()
     result = trotter.evolve(problem)
     evolved_state = Statevector(result.evolved_state)
-    # Dictionary of probabilities
+    # dictionary of probabilities
     amplitudes_dict = evolved_state.probabilities_dict()
     print("amplitudes_dict\n")
     print(amplitudes_dict)
     # turn the result into an array of particles
     final_particles = make_result_into_particles(result)
-    # and the set of particles into json!s
+    # and the set of particles into json!
 #    final_state = translate_particles_to_final_state(final_particles)
     # write the result to the `final_state.json` file
     with open("final_state.json") as final_state:
@@ -51,14 +55,55 @@ def run_simulation(modus_operandi, initial_state, time, forward):
     print("return the final state\n")
     return final_state
 
-def run_simulation_matter():
-    # this version will be smart and do different things depending on the type
-    # of matter that it deals with
-    # TODO FIRST
+def run_simulation(modus_operandi, initial_state, time, forward):
+    # use the initial state to determine what type of matter
+    (matter_type, matter) = determine_matter_type(initial_state)
+    # based on the matter type, choose which model to use for hamiltonian
+    match matter_type:
+        case "particle":
+            final_state_json = evolve_particle_problem(matter)
+        case "atom":
+            final_state_json = evolve_atom_problem(matter)
+        case "molecule":
+            final_state_json = evolve_molecule_problem(matter)
 
 def count_qubits_required():
     # TODO
     return 2
+
+# right now this isn't smart about determining matter type
+# there's got to be a more solid way of doing that
+# maybe throw an error if there are conflicting matter types
+# in the initial state?
+def determine_matter_type(initial_state):
+    print(initial_state)
+    # make `initial_state` string into json object
+    initial_state_dictionary = json.loads(initial_state)
+    # need to peek at each piece of the json object
+    keys = list(initial_state_dictionary.keys())
+    # collect all of the pieces of the json object here
+    # in their particle sandbox form
+    matter = []
+    for key in keys:
+        match key:
+            case "up":
+                up = particle.UpQuark(1)
+                matter.append(up)
+                matter_type = up.type
+            case "down":
+                down = particle.DownQuark(1)
+                matter.append(down)
+                matter_type = down.type
+            case "proton":
+                proton = particle.Proton(1)
+                matter.append(proton)
+                matter_type = proton.type
+            case "hydrogen":
+                hydrogen = atoms.Hydrogen(1)
+                matter.append(hydrogen)
+                matter_type = hydrogen.type
+    return_tuple = (matter_type, matter)
+    return return_tuple
 
 def translate_initial_state_to_particles(initial_state):
     print(initial_state)
@@ -89,7 +134,39 @@ def translate_particles_to_final_state(particles):
     final_state = json.dumps(final_state_dictionary)
     return final_state
 
-# algorithm things
+# MARK: algorithm things
+
+def evolve_particle_problem(matter):
+    print("get the composite hamiltonian of the initial particles\n")
+    composite_hamiltonian = 0
+    for particle in initial_particles:
+        # use the energies to make the hamiltonian
+        hamiltonian = make_sparse_pauli_op(particle, time)
+        # add the hamiltonian for that particle to the composite
+        composite_hamiltonian += hamiltonian
+    # use the composite hamiltonian and the particles to make the time evolution problem
+    print("create the time evolution problem\n")
+    print(composite_hamiltonian)
+    problem = make_time_evolution_problem(composite_hamiltonian, initial_particles, time)
+    # use trotterization to solve the problem
+    print("evolve the problem")
+    trotter = TrotterQRTE()
+    result = trotter.evolve(problem)
+    evolved_state = Statevector(result.evolved_state)
+        # dictionary of probabilities
+    amplitudes_dict = evolved_state.probabilities_dict()
+    print("amplitudes_dict\n")
+    print(amplitudes_dict)
+    # turn the result into an array of particles
+    final_particles = make_result_into_particles(result)
+    # and the set of particles into json!
+    final_state = translate_particles_to_final_state(final_particles)
+    return final_state
+
+def evolve_atom_problem(matter):
+
+def evolve_molecule_problem(matter):
+    return { "ammonia":1 }
 
 def make_time_evolution_problem(hamiltonian, particles, time):
     final_time = time
@@ -132,7 +209,7 @@ def translate_statevector_to_particles(statevector):
     particle2 = particle
     return [particle1, particle2]
 
-# energy things
+# MARK: energy things
 
 # the tutorial calls the return value of this fn the hamiltonian
 def make_sparse_pauli_op(particle, time):
@@ -175,12 +252,12 @@ def get_potential_energy(particle, time):
     formatted_potential = ("Y", [n_i], 1)
     return formatted_potential
 
-# math things
+# MARK: math things
 def partial_over_partial(coordinate):
     # TODO
     return 1
 
-# main
+# MARK: main
 #number = 1
 #mass = 2
 #coordinate = 3
@@ -192,7 +269,7 @@ def partial_over_partial(coordinate):
 #for p in particles:
 #    print(p.number)
 
-# notes
+# MARK: notes
 # ----------------------------- https://phys.libretexts.org/Bookshelves/Quantum_Mechanics/Introductory_Quantum_Mechanics_(Fitzpatrick)/05%3A_Multi-Particle_Systems
 #
 # https://hbar.uchicago.edu/hbar_exp.php

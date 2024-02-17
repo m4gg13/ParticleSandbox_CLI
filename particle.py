@@ -4,8 +4,9 @@ class Particle:
         self.mass = 2
         self.coordinate = 3
         self.name = "generic"
+        self.type = "particle"
 
-class Fermion:
+class Fermion(Particle):
     def __init__(self, number):
         self.fundamental_class = ["fermion"]
         self.interactions = ["strong", "weak", "electromagnetic", "gravity"]

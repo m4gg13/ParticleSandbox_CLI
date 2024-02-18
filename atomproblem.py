@@ -6,6 +6,8 @@ from qiskit_nature.second_q.algorithms import GroundStateEigensolver
 from qiskit_nature.second_q.mappers import JordanWignerMapper
 
 def evolve(state):
+    print("state:")
+    print(state[0].name)
     # make atom - looks like this `"H 0 0 0; H 0 0 0.735"`
     atom = "H 0 0 0; H 0 0 0.735"
     # determine the problem
@@ -31,10 +33,13 @@ def evolve(state):
     # round to one decimal since results won't be exact(?)
     initial_energy = round(result.total_energies[0], 1)
     final_energy = round(problem.reference_energy, 1)
+    final_state = []
     print_energy_details(initial_energy, final_energy)
-    if result.total_energies == problem.reference_energy:
+    if initial_energy == final_energy:
         # then the system is the same as it was at the beginning
         # and we can return the initial state as the final state
+        print("state 1:")
+        print(state[0].name)
         final_state = state
 #    elif result.total_energies > problem.reference_energy:
         # the energy increased in the evolution, not sure what that would mean actually!
@@ -42,7 +47,28 @@ def evolve(state):
 #    elif result.total_energies < problem.reference_energy:
 #        final_state =
 #    print_all(hamiltonian, problem, result, initial_energy, final_energy)
-    return { "ammonia":1 }
+    final_atoms = translate_state_to_atoms(final_state)
+    return final_atoms
+
+def translate_state_to_atoms(state):
+    i = 0
+    final_atoms = ""
+    for atom in state:
+        # if this isn't the first atom, add a semicolon
+        if i > 0:
+            final_atoms += "; "
+        # figure out what kind of atom we're dealing with
+        print("atom.name:")
+        print(atom.name)
+        match atom.name:
+            case "hydrogen":
+                # make atom - looks like this for example `"H 0 0 0; H 0 0 0.735"`
+                coordinates = atom.coordinates.describe()
+                final_atoms = final_atoms + "H " + coordinates
+        i+=1
+    print("final_atoms:")
+    print(final_atoms)
+    return final_atoms
 
 # MARK: logging
 

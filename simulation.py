@@ -116,17 +116,15 @@ def determine_matter_type(initial_state):
                 matter.append(proton)
                 matter_type = proton.type
             case "hydrogen":
-#                print("initial_state_dictionary[hydrogen]")
-#                print(initial_state_dictionary["hydrogen"])
                 for h in initial_state_dictionary["hydrogen"]:
                     hydrogen = atom.Hydrogen(1)
                     # really should probably check to see whether the object has these
                     # keys before just boldly using them
-                    hydrogen.coordinates = (h["x"], h["y"], h["z"])
+                    hydrogen.coordinates.x = h["x"]
+                    hydrogen.coordinates.y = h["y"]
+                    hydrogen.coordinates.z = h["z"]
                     matter.append(hydrogen)
                 matter_type = hydrogen.type
-                print("matter")
-                print(matter)
     return_tuple = (matter_type, matter)
     return return_tuple
 

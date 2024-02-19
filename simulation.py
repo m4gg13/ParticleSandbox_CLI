@@ -57,7 +57,6 @@ def run_simulation_dumb(modus_operandi, initial_state, time, forward):
     # write the result to the `final_state.json` file
     with open("final_state.json") as final_state:
         final_state = final_state.read()
-    print("return the final state\n")
     return final_state
 
 def run_simulation(modus_operandi, initial_state, time, forward):
@@ -71,13 +70,12 @@ def run_simulation(modus_operandi, initial_state, time, forward):
             final_state_json = atomproblem.evolve(state)
 #        case "molecule":
 #            final_state_json = moleculeproblem.evolve(state)
-    # for now just run this one by default
-#    final_state_json = moleculeproblem.evolve(state)
-    # TODO
+    # make the json object into a string
+    final_state_str = json.dumps(final_state_json)
     # write out the final state to the appropriate file
-    with open("final_state.json") as final_state:
-        final_state_str = final_state.read()
-    print("return the final state\n")
+    final_state_file = open("final_state.json", "w")
+    final_state_file.write(final_state_str)
+    final_state_file.close()
     return final_state_str
 
 def count_qubits_required():
@@ -89,7 +87,6 @@ def count_qubits_required():
 # maybe throw an error if there are conflicting matter types
 # in the initial state?
 def determine_matter_type(initial_state):
-    print(initial_state)
     # make `initial_state` string into json object
     initial_state_dictionary = json.loads(initial_state)
     # need to peek at each piece of the json object

@@ -5,14 +5,14 @@ from qiskit_algorithms import NumPyMinimumEigensolver
 from qiskit_nature.second_q.algorithms import GroundStateEigensolver
 from qiskit_nature.second_q.mappers import JordanWignerMapper
 
+import json
+
 def evolve(state):
-    print("state:")
-    print(state[0].name)
     # make atom - looks like this `"H 0 0 0; H 0 0 0.735"`
-    atom = "H 0 0 0; H 0 0 0.735"
+    atoms = translate_state_to_atoms(state)
     # determine the problem
     driver = PySCFDriver(
-        atom=atom,
+        atom=atoms,
         basis="sto3g",
         charge=0,
         spin=0,
@@ -33,22 +33,20 @@ def evolve(state):
     # round to one decimal since results won't be exact(?)
     initial_energy = round(result.total_energies[0], 1)
     final_energy = round(problem.reference_energy, 1)
-    final_state = []
+    final_atoms = []
     print_energy_details(initial_energy, final_energy)
     if initial_energy == final_energy:
         # then the system is the same as it was at the beginning
         # and we can return the initial state as the final state
-        print("state 1:")
-        print(state[0].name)
-        final_state = state
+        final_atoms = state
 #    elif result.total_energies > problem.reference_energy:
         # the energy increased in the evolution, not sure what that would mean actually!
 #        final_state = state
 #    elif result.total_energies < problem.reference_energy:
 #        final_state =
 #    print_all(hamiltonian, problem, result, initial_energy, final_energy)
-    final_atoms = translate_state_to_atoms(final_state)
-    return final_atoms
+    final_state = translate_atoms_to_state(final_atoms)
+    return final_state
 
 def translate_state_to_atoms(state):
     i = 0
@@ -58,17 +56,25 @@ def translate_state_to_atoms(state):
         if i > 0:
             final_atoms += "; "
         # figure out what kind of atom we're dealing with
-        print("atom.name:")
-        print(atom.name)
         match atom.name:
             case "hydrogen":
                 # make atom - looks like this for example `"H 0 0 0; H 0 0 0.735"`
                 coordinates = atom.coordinates.describe()
                 final_atoms = final_atoms + "H " + coordinates
         i+=1
-    print("final_atoms:")
-    print(final_atoms)
     return final_atoms
+
+def translate_atoms_to_state(atoms):
+    final_state_dictionary = {}
+    for atom in atoms:
+        key = atom.name
+        if key in final_state_dictionary.keys():
+            count = final_state_dictionary[key]
+            final_state_dictionary[key] = count + 1
+        else:
+            final_state_dictionary[key] = 1
+    final_state = json.dumps(final_state_dictionary)
+    return final_state
 
 # MARK: logging
 

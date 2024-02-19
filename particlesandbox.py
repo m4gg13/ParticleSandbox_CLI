@@ -80,6 +80,11 @@ def direction():
     print("\n|------------------------|\n\n")
     return forward
 
+def print_final_state(final_state):
+    print("\n|-------Final State-------|\n")
+    print(final_state)
+    print("\n|------------------------|\n\n")
+
 # scrub
 
 # this isn't used. maybe someday
@@ -143,7 +148,7 @@ def wizard():
     # get the final state
 #    final_state = translate_particles_to_final_state(particles)
     # and print out whats going in in there!
-    print(final_state)
+    print_final_state(final_state)
     print("\n")
     print("*+>~.. *+>~.......~<+* ..~<+*\n\n")
 

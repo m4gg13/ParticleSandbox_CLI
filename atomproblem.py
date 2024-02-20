@@ -10,12 +10,15 @@ import json
 def evolve(state):
     # make atom - looks like this `"H 0 0 0; H 0 0 0.735"`
     atoms = translate_state_to_atoms(state)
+    basis = "sto3g"
+    charge = 0
+    spin = 0
     # determine the problem
     driver = PySCFDriver(
         atom=atoms,
-        basis="sto3g",
-        charge=0.1,
-        spin=0,
+        basis=basis,
+        charge=charge,
+        spin=spin,
         unit=DistanceUnit.ANGSTROM,
     )
     problem = driver.run()
@@ -47,7 +50,7 @@ def evolve(state):
 #        final_state =
     print_all(hamiltonian, problem, result, initial_energy, final_energy)
     max_problem_energy = find_max_energy(problem)
-    print_problem_result(problem, result, max_problem_energy)
+    print_problem_result(problem, result, max_problem_energy, spin)
     final_state = translate_atoms_to_state(final_atoms)
     return final_state
 
@@ -241,15 +244,18 @@ def print_all(hamiltonian, problem, result, initial_energy, final_energy):
     print_result_details(result)
     print_energy_details(initial_energy, final_energy)
 
-# TODO NEXT
+# TODO
 # trying to collect information about initial and final states so that i can tell
 # what a state turns into on the other side
 # under the changes of different variables too. thinking of writing tests for this
-def print_problem_result(problem, result, max_problem_energy):
+def print_problem_result(problem, result, max_problem_energy, initial_spin):
     print("|||||")
     print("| PROBLEM LABEL | RESULT LABEL | PROBLEM | RESULT |")
     print("| num_particles | num_particles | " + str(problem.num_particles) + " | " + str(result.num_particles) + " |")
     print("| reference_energy | total_energies | " + str(problem.reference_energy) + " | " + str(result.total_energies[0]) + " |")
     print("| list(problem.second_q_ops()[0].items())[0][1] | groundenergy | " + str(max_problem_energy) + " | " + str(result.groundenergy) + " |")
     # how about nuclear repulsion energy?
-    print("|  |  | " + str(problem.reference_energy) + " | " + str(result.total_energies[0]) + " |")
+#    print("| nuclear_repulsion_energy |  | " + str(problem.nuclear_repulsion_energy) + " | " + str(result.????) + " |")
+#    print("| orbital_energies | spin | " + str(problem.orbital_energies) + " | " + str(result.spin) + " |")
+#    print("| orbital_energies_b | spin | " + str(problem.orbital_energies_b) + " | " + str(result.spin) + " |")
+    print("| initial spin | spin | " + str(initial_spin) + " | " + str(result.spin) + " |")

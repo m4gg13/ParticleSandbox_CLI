@@ -8,12 +8,13 @@ class Describable:
     def describe():
         return ""
 
+# TODO why can this not take params????
 class Coordinates(Describable):
     def __init_(self):
-        super.__init_()
-        self.x = 0
-        self.y = 0
-        self.z = 0
+        super().__init_()
+        self.x = x
+        self.y = y
+        self.z = z
     def describe(self):
         description = str(self.x) + " "
         description += str(self.y) + " "

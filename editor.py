@@ -57,11 +57,29 @@ tk.Label(window, text="->").grid(row = type_row, column = 1)
 # MARK: State Visualization section
 # box where i can drag things around and add a button
 
+#i2 = tk.Entry(Page)
+#i2.insert(0, "INITIAL")
+#i2.grid(row = irow, column = 1, sticky = "w")
+#i2.config(width = int(2 / 3 * i2.cget("width")))
+#i2.configure(state="readonly")
+#
+#i3 = tk.Entry(Page)
+#i3.insert(0, "FINAL")
+#i3.grid(row = irow, column = 2, sticky = "w")
+#i3.config(width = int(2 / 3 * i3.cget("width")))
+#i3.configure(state="readonly")
+
 # box where i can drag things around and add a button
 
 # MARK: Variable Configuration section
 tk.Label(window, text="INITIAL").grid(row = state_row, column = 1)
 tk.Label(window, text="FINAL").grid(row = state_row, column = 2)
+
+#e1 = tk.Entry(Page)
+#e1.insert(0, "ENERGY")
+#e1.grid(row = erow, column = 0, sticky = "w")
+#e1.config(width = int(2 / 3 * e1.cget("width")))
+#e1.configure(state="readonly")
 
 tk.Label(window, text="ENERGY").grid(row = energy_row, column = 0)
 # TODO: how to read in from the text box?
@@ -76,6 +94,12 @@ s1.grid(row = spin_row, column = 1)
 s2 = tk.Entry(window)
 s2.grid(row = spin_row, column = 2)
 
+#e3 = tk.Entry(Page)
+#e3.insert(0, "final")
+#e3.grid(row = erow, column = 2, sticky = "w")
+#e3.config(width = int(2 / 3 * e3.cget("width")))
+#e3.configure(state="readonly")
+
 tk.Label(window, text="PARTICLE #").grid(row = particle_number_row, column = 0)
 p1 = tk.Entry(window, width = 20)
 p1.grid(row = particle_number_row, column = 1)
@@ -84,8 +108,15 @@ p2.grid(row = particle_number_row, column = 2)
 
 # MARK: State Chooser dropdown section
 
+#s1 = tk.Entry(Page)
+#s1.insert(0, "SPIN")
+#s1.grid(row = srow, column = 0, sticky = "w")
+#s1.config(width = int(2 / 3 * s1.cget("width")))
+#s1.configure(state="readonly")
+
 # MARK: Console section
 console = tk.scrolledtext.ScrolledText(window, wrap=tk.WORD)
+
 
 def print_to_entries(result):
     e1_text = result.initial_energy
@@ -101,6 +132,12 @@ def print_to_entries(result):
     p1.insert(0, p1_text)
     p2.insert(0, p2_text)
 
+#s3 = tk.Entry(Page)
+#s3.insert(0, "final")
+#s3.grid(row = srow, column = 2, sticky = "w")
+#s3.config(width = int(2 / 3 * s3.cget("width")))
+#s3.configure(state="readonly")
+
 def print_to_console(evolution_state):
     str = atomproblem.evolution_to_string(evolution_state)
     console.insert(tk.END, str)
@@ -109,6 +146,12 @@ def runButton():
     evolution_state = determine_problem_type()
     print_to_entries(evolution_state)
     print_to_console(evolution_state)
+
+#p1 = tk.Entry(Page)
+#p1.insert(0, "# PARTICLES")
+#p1.grid(row = prow, column = 0, sticky = "w")
+#p1.config(width = int(2 / 3 * p1.cget("width")))
+#p1.configure(state="readonly")
 
 # MARK: Action Button Section
 #tk.Button(window, text='RUN', command = run_simulation).grid(row=action_button_row, column=1)
@@ -120,7 +163,6 @@ tk.Button(window, text='RESET').grid(row=action_button_row, column=1)
 tk.Button(window, text='QUIT').grid(row=action_button_row, column=2)
 
 console.grid(row=console_row, columnspan=width)
-
 window.mainloop()
 
 # MARK: - notes

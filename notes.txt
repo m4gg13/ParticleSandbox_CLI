@@ -1,0 +1,13 @@
+# 22 march 2024
+ok i think i figured out the "how many particles are in the end state" thing.
+it is fairly simple
+
+```
+if focus initial state == final state
+    then same number of particles
+else if focus initial state == focus +1 particle initial state
+    then final state number of particles is initial state +1
+else if focus initial state == focus -1 particle initial state
+    then final state number of particles is initial state -1
+... maybe continue on until we have tried +/- 5 or something?
+```

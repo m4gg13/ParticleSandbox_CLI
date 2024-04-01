@@ -67,7 +67,7 @@ def run_simulation(modus_operandi, initial_state, time, forward):
 #        case "particle":
 #            final_state_json = particleproblem.evolve(state)
         case "atom":
-            final_state_json = atomproblem.evolve(state)
+            final_state_json = atomproblem.get_json_evolution_result(state)
 #        case "molecule":
 #            final_state_json = moleculeproblem.evolve(state)
     # make the json object into a string

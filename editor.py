@@ -4,6 +4,8 @@ from tkinter.scrolledtext import ScrolledText
 import simulation
 import atomproblem
 
+import particlesandbox
+
 window = tk.Tk()
 window.geometry("800x800")
 
@@ -48,6 +50,26 @@ particle_number_row = spin_row + 1
 action_button_row = particle_number_row + 1
 state_chooser_row = action_button_row + 1
 console_row = state_chooser_row + 1
+
+#window.title("Hello World")
+#window.geometry("400x800")
+#
+#Page = tk.Frame(window)
+#Page.place(relx = 0.5, rely = 0.5, anchor = "center")
+#Page.grid_columnconfigure(3, weight=1)
+
+#button = tk.Button(text="My simple app.")
+##button.bind("<Return>", handle_button_press)
+#button.pack()
+
+# MARK: - VARIABLE CONFIGURATION WINDOW
+# MARK: visualization windows section
+
+# MARK: variable configuration section
+# each variable requires a label, textbox, and text
+#     for each in {field_title, initial_state, final_state}
+
+irow = 1
 
 # MARK: Initial & Final Matter Type section
 # dropdown in column 1
@@ -153,6 +175,22 @@ def runButton():
 #p1.config(width = int(2 / 3 * p1.cget("width")))
 #p1.configure(state="readonly")
 
+c3 = tk.Entry(Page)
+c3.insert(0, "final")
+c3.grid(row = crow, column = 2, sticky = "w")
+c3.config(width = int(2 / 3 * c3.cget("width")))
+c3.configure(state = "readonly")
+
+# MARK: configuration picker dropdown section
+
+# MARK: console window section
+consolerow = 6
+console = tk.Entry(Page)
+consolemsg = make_console_msg()
+console.insert(0, "console")
+console.grid(row = consolerow, column = 1, sticky = "w", pady = 10)
+console.configure(state = "readonly")
+
 # MARK: Action Button Section
 #tk.Button(window, text='RUN', command = run_simulation).grid(row=action_button_row, column=1)
 # atomproblem.evolve(state, basis, charge, spin, print_all, print_comparison)
@@ -165,6 +203,7 @@ tk.Button(window, text='QUIT').grid(row=action_button_row, column=2)
 console.grid(row=console_row, columnspan=width)
 window.mainloop()
 
+
 # MARK: - notes
 #from tkinter import *
 #from tkinter import messagebox
@@ -175,3 +214,22 @@ window.mainloop()
 #B = Button(top, text ="Hello", command = helloCallBack)
 #B.place(x=50,y=50)
 #top.mainloop()
+
+# MARK: helpers
+
+def make_console_msg():
+    msg = "*+>~.. PARTICLE SANDBOX ..~<+*\n\n"
+    # get the initial state
+    i = particlesandbox.initial_state()
+#    particles = translate_initial_state_to_particles(i)
+    # and print out whats going on there
+#    for p in particles:
+#        print(str(p.number))
+    final_state = particlesandbox.run_simulation(1, i, 1, 1)
+    # get the final state
+#    final_state = translate_particles_to_final_state(particles)
+    # and print out whats going in in there!
+    msg += final_state
+    msg += "\n"
+    msg += "*+>~.. *+>~.......~<+* ..~<+*\n\n"
+    return msg

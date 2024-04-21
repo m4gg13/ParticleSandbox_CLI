@@ -20,6 +20,8 @@ import particleproblem
 import atomproblem
 import moleculeproblem
 
+import cache
+
 # MARK: logistical things
 
 # this is the old one that doesnt respond to which type of matter we're dealing with
@@ -59,18 +61,37 @@ def run_simulation_dumb(modus_operandi, initial_state, time, forward):
         final_state = final_state.read()
     return final_state
 
-def run_simulation(modus_operandi, initial_state, time, forward):
+def run_simulation(modus_operandi, initial_state_json, time, forward):
     # use the initial state to determine what type of matter
-    (matter_type, state) = determine_matter_type(initial_state)
+    (matter_type, initial_state) = determine_matter_type(initial_state_json)
     # based on the matter type, choose which model to use for hamiltonian
     match matter_type:
 #        case "particle":
 #            final_state_json = particleproblem.evolve(state)
         case "atom":
-            final_state_json = atomproblem.get_json_evolution_result(state)
+            print("run the driver...")
+            problem = atomproblem.run_driver(initial_state)
+            print("generate an identifier for this state...")
+            initial_state_id = get_identifier_for_state(initial_state, problem)
+            print("check the cache")
+            final_state_id = cache.query(time, initial_state_id)
+#            if final_state_id is None:
+            print("evolve the problem...")
+            result = atomproblem.evolve(problem)
+#            else:
+#               # *****TODO NEXT!!!!!!******
+#               # this will make the id into soemthing
+#               # that is consumable for atomproblem.parse_result on line 86
+#                result = translate_id_to_state
+            do_print_all = False
+            do_print_comparison = False
+            # ****** this is broken ): ******
+            final_state_json = atomproblem.parse_result(initial_state, problem, result, do_print_all, do_print_comparison)
+#             = cache.query()
 #        case "molecule":
 #            final_state_json = moleculeproblem.evolve(state)
     # make the json object into a string
+    # ****** therefore this is also broken ): ******
     final_state_str = json.dumps(final_state_json)
     # write out the final state to the appropriate file
     final_state_file = open("final_state.json", "w")
@@ -153,6 +174,37 @@ def translate_particles_to_final_state(particles):
             final_state_dictionary[key] = 1
     final_state = json.dumps(final_state_dictionary)
     return final_state
+
+def get_identifier_for_state(state, problem):
+    print()
+    # identifier = "symbols + charge + energy"
+    symbols = ""
+    charge = 0.0
+    energy = 0.0
+    for matter in state:
+        symbols += matter.symbol
+        electrons = matter.electrons
+        protons = matter.protons
+        # for example, 4 protons - 1 electron = +3 charge
+        charge += (protons - electrons)
+    # initial_energy = round(result.total_energies[0], 1)
+    # final_energy = round(problem.reference_energy, 1)
+    if charge >= 0:
+        charge_str = "+" + str(charge)
+    else:
+        charge_str = str(charge)
+    identifier = symbols + charge_str + str(round(problem.reference_energy, 1))
+    print("this state's identifier is " + identifier)
+    print()
+    return identifier
+
+def get_identifier_for_particles(particles):
+    # TODO
+    return ""
+
+def get_identifier_for_particle(particle):
+    # TODO
+    return 10
 
 # MARK: algorithm things
 

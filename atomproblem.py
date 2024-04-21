@@ -10,10 +10,11 @@ import json
 # TODO: find a way to determine and report what the final state
 #   of the system is in terms of type like `matter`, `particle`, `atom`, `molecule`
 #   since for ex H_2 atomic input state ends up being a molecule output state
-def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, print_all:bool=False, print_comparison:bool=False):
+#def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, print_all:bool=False, print_comparison:bool=False):
+def run_driver(state, basis:str="sto3g", charge:int=0, spin:int=0):
     # make atom - looks like this `"H 0 0 0; H 0 0 0.735"`
     atoms = translate_state_to_atoms(state)
-    final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin, print_all, print_comparison)
+    final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin)
     # determine the problem
     driver = PySCFDriver(
         atom=atoms,
@@ -23,6 +24,16 @@ def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, print_all:bool=Fa
         unit=DistanceUnit.ANGSTROM,
     )
     problem = driver.run()
+    return problem
+
+# TODO
+# 1. make a param that controls whether comparison is printed
+# 2. find a way to determine and report what the final state
+#   of the system is in terms of type like `matter`, `particle`, `atom`, `molecule`
+#   since for ex H_2 atomic input state ends up being a molecule output state
+#def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
+def evolve(problem):
+#    problem = runDriver(state, basis, charge, spin)
     hamiltonian = problem.hamiltonian
 #    print_hamiltonian_details(hamiltonian)
     # hamiltonian.nuclear_repulsion_energy  # NOT included in the second_q_op above
@@ -34,7 +45,10 @@ def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, print_all:bool=Fa
     )
     result = solver.solve(problem)
 #    print_result_details(result)
-    # round to one decimal since results won't be exact(?)
+    return result
+
+def parse_result(initial_state, problem, result, initial_spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
+        # round to one decimal since results won't be exact(?)
     initial_energy = round(result.total_energies[0], 1)
     final_energy = round(problem.reference_energy, 1)
     final_atoms = []
@@ -42,27 +56,30 @@ def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, print_all:bool=Fa
     if initial_energy == final_energy:
         print("the system is the same as it was at the beginning")
         # we can return the initial state as the final state
-        final_atoms = state
+        final_atoms = initial_state
     elif initial_energy > final_energy:
         # the energy increased in the evolution, not sure what that would mean actually!
         print("the energy of the system increased in the evolution")
-        final_state = state
+#        final_state = state
 #    elif initial_energy < final_energy:
 #        print("the energy of the system decreased in the evolution")
 #        final_state =
-    if print_all:
-        print_all(hamiltonian, problem, result, initial_energy, final_energy)
+#    do_print_all = True
+#    do_print_comparison = True
+    if do_print_all:
+        print_all(problem.hamiltonian, problem, result, initial_energy, final_energy)
     max_problem_energy = find_max_energy(problem)
-    if print_comparison:
-        print_problem_result(problem, result, max_problem_energy, initial_energy, final_energy, spin)
+    if do_print_comparison:
+        print_problem_result(problem, result, max_problem_energy, initial_energy, final_energy, initial_spin)
     final_state = translate_atoms_to_state(final_atoms)
     # TODO: the charge and spin are not accurate here pretty sure
-    initial_state = state
     initial_atoms = []
-    initial_spin = spin
     final_spin = result.spin
+    # technically redoing this work... \/
+    atoms = translate_state_to_atoms(initial_state)
     initial_num_particles = atoms.count(';') + 1
     final_num_particles = result.num_particles
+    # somthing went wrong with this where it isn't serializable anymore ):
     result = EvolutionSummary(initial_state,
                               final_state,
                               initial_atoms,
@@ -73,7 +90,7 @@ def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, print_all:bool=Fa
                               final_spin,
                               initial_num_particles,
                               final_num_particles,
-                              hamiltonian,
+                              problem.hamiltonian,
                               problem)
     return result
 
@@ -134,15 +151,13 @@ def translate_atoms_to_state(atoms):
 
 # (state, basis, charge, spin, print_all, print_comparison)
 class AtomProblemState:
-    def __init__(self, stage, state, atoms, basis, charge, spin, print_all, print_comparison):
+    def __init__(self, stage, state, atoms, basis, charge, spin):
         self.stage = stage
         self.state = state
         self.atoms = atoms
         self.basis = basis
         self.charge = charge
         self.spin = spin
-        self.print_all = print_all
-        self.print_comparison = print_comparison
 
 # MARK: logging
 

@@ -75,23 +75,22 @@ def run_simulation(modus_operandi, initial_state_json, time, forward):
             initial_state_id = get_identifier_for_state(initial_state, problem)
             print("check the cache")
             final_state_id = cache.query(time, initial_state_id)
-#            if final_state_id is None:
-            print("evolve the problem...")
-            result = atomproblem.evolve(problem)
-#            else:
-#               # *****TODO NEXT!!!!!!******
-#               # this will make the id into soemthing
-#               # that is consumable for atomproblem.parse_result on line 86
+            if final_state_id is None:
+                print("evolve the problem...")
+                result = atomproblem.evolve(problem)
+            else:
+                print("wooo")
+                print(final_state_id)
+                result = atomproblem.evolve(problem)
 #                result = translate_id_to_state
             do_print_all = False
             do_print_comparison = False
-            # ****** this is broken ): ******
             final_state_json = atomproblem.parse_result(initial_state, problem, result, do_print_all, do_print_comparison)
 #             = cache.query()
 #        case "molecule":
 #            final_state_json = moleculeproblem.evolve(state)
     # make the json object into a string
-    # ****** therefore this is also broken ): ******
+#    print(final_state_json)
     final_state_str = json.dumps(final_state_json)
     # write out the final state to the appropriate file
     final_state_file = open("final_state.json", "w")

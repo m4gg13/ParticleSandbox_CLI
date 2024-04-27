@@ -75,23 +75,24 @@ def parse_result(initial_state, problem, result, initial_spin:int=0, do_print_al
     # TODO: the charge and spin are not accurate here pretty sure
     initial_atoms = []
     final_spin = result.spin
-    # technically redoing this work... \/
     atoms = translate_state_to_atoms(initial_state)
     initial_num_particles = atoms.count(';') + 1
     final_num_particles = result.num_particles
-    # somthing went wrong with this where it isn't serializable anymore ):
-    result = EvolutionSummary(initial_state,
-                              final_state,
-                              initial_atoms,
-                              final_atoms,
-                              initial_energy,
-                              final_energy,
-                              initial_spin,
-                              final_spin,
-                              initial_num_particles,
-                              final_num_particles,
-                              problem.hamiltonian,
-                              problem)
+    result = '{\n'
+    result += '"initial_state": ' + str(initial_state) + ', '
+    result += '"final_state": ' + str(final_state) + ', '
+    result += '"initial_atoms": ' + str(initial_atoms) + ', '
+    result += '"final_atoms": ' + str(final_atoms) + ', '
+    result += '"initial_energy": ' + str(initial_energy) + ', '
+    result += '"final_energy": ' + str(final_energy) + ', '
+    result += '"initial_spin": ' + str(initial_spin) + ', '
+    result += '"final_spin": ' + str(final_spin) + ', '
+    result += '"initial_num_particles": ' + str(initial_num_particles) + ', '
+    result += '"final_num_particles": ' + str(final_num_particles) + ', '
+    result += '"problem.hamiltonian": ' + str(problem.hamiltonian) + ', '
+    result += '"problem": ' + str(problem) + ' '
+    result += '}'
+
     return result
 
 def get_json_evolution_result(state,
@@ -381,31 +382,3 @@ def print_problem_result(problem, result, max_problem_energy, initial_energy, fi
 #    print("| orbital_energies_b | spin | " + str(problem.orbital_energies_b) + " | " + str(result.spin) + " |")
     print("| initial spin | spin | " + str(initial_spin) + " | " + str(result.spin) + " |")
     print("| initial energy | final energy | " + str(initial_energy) + " | " + str(final_energy) + " |")
-
-class EvolutionSummary:
-    def __init__(self,
-                 initial_state,
-                 final_state,
-                 initial_atoms,
-                 final_atoms,
-                 initial_energy,
-                 final_energy,
-                 initial_spin,
-                 final_spin,
-                 initial_num_particles,
-                 final_num_particles,
-                 hamiltonian,
-                 problem):
-        self.initial_state = initial_state
-        self.final_state = final_state
-        self.initial_atoms = initial_atoms
-        self.final_atoms = final_atoms
-        self.initial_energy = initial_energy
-        self.final_energy = final_energy
-        self.initial_spin = initial_spin
-        self.final_spin = final_spin
-        self.initial_num_particles = initial_num_particles
-        self.final_num_particles = final_num_particles
-        self.hamiltonian = hamiltonian
-        self.problem = problem
-

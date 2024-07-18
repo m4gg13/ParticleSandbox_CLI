@@ -21,6 +21,7 @@ import atomproblem
 import moleculeproblem
 
 import cache
+import cacheid
 
 # MARK: logistical things
 
@@ -79,12 +80,13 @@ def run_simulation(modus_operandi, initial_state_json, time, forward):
                 print("evolve the problem...")
                 result = atomproblem.evolve(problem)
             else:
-                print("wooo")
+                print("found initial state in the cache, final state id is:")
                 print(final_state_id)
-                result = atomproblem.evolve(problem)
-#                result = translate_id_to_state
+                result = translate_ids_to_result(initial_state_id, problem, final_state_id)
             do_print_all = False
             do_print_comparison = False
+#            print("result.total_energies")
+#            print(result.total_energies)
             final_state_json = atomproblem.parse_result(initial_state, problem, result, do_print_all, do_print_comparison)
 #             = cache.query()
 #        case "molecule":
@@ -144,6 +146,83 @@ def determine_matter_type(initial_state):
                 matter_type = hydrogen.type
     return_tuple = (matter_type, matter)
     return return_tuple
+
+def translate_ids_to_result(initial_state_id, problem, final_state_id):
+    # id goes "particles+spin+energy"
+    # there isnt a part of the id the way that it is that can
+    # effective represent this part of the state
+    initial_atoms = cacheid.get_atoms_from_id(initial_state_id)
+    # TODO NEXT 2 -> get atoms from id
+    final_atoms = cacheid.get_atoms_from_id(final_state_id)
+    initial_state = atomproblem.translate_atoms_to_state(initial_atoms)
+    final_state = atomproblem.translate_atoms_to_state(final_atoms)
+    initial_energy = cacheid.get_energy_from_id(initial_state_id)
+    final_energy = cacheid.get_energy_from_id(final_state_id)
+    print("final_state_id")
+    print(final_state_id)
+    print("cacheid.get_spin_from_id(final_state_id)")
+    print(cacheid.get_spin_from_id(final_state_id))
+    initial_spin = cacheid.get_spin_from_id(initial_state_id)
+    final_spin = cacheid.get_spin_from_id(final_state_id)
+    initial_num_particles = cacheid.get_num_particles_from_id(initial_state_id)
+    final_num_particles = cacheid.get_num_particles_from_id(final_state_id)
+    print("final_energy")
+    print(final_energy)
+#    result = {
+#        "initial_state": initial_state,
+#        "final_state": final_state,
+#        "initial_atoms": initial_atoms,
+#        "final_atoms": final_atoms,
+#        "initial_energy": initial_energy,
+#        "final_energy": final_energy,
+#        "total_energies": [final_energy],
+#        "initial_spin": initial_spin,
+#        "final_spin": final_spin,
+#        "initial_num_particles": initial_num_particles,
+#        "final_num_particles": final_num_particles,
+#        "problem.hamiltonian": problem.hamiltonian,
+#        "problem": problem
+#    }
+    result = Result(initial_state,
+                    final_state,
+                    initial_atoms,
+                    final_atoms,
+                    initial_energy,
+                    final_energy,
+                    [final_energy],
+                    initial_spin,
+                    final_spin,
+                    initial_num_particles,
+                    final_num_particles,
+                    problem)
+    return result
+
+class Result:
+    def __init__(self,
+                 initial_state,
+                 final_state,
+                 initial_atoms,
+                 final_atoms,
+                 initial_energy,
+                 final_energy,
+                 total_energies,
+                 initial_spin,
+                 final_spin,
+                 initial_num_particles,
+                 final_num_particles,
+                 problem):
+        self.initial_state = initial_state
+        self.final_state = final_state
+        self.initial_atoms = initial_atoms
+        self.final_atoms = final_atoms
+        self.initial_energy = initial_energy
+        self.final_energy = final_energy
+        self.total_energies = total_energies
+        self.initial_spin = initial_spin
+        self.final_spin = final_spin
+        self.initial_num_particles = initial_num_particles
+        self.final_num_particles = final_num_particles
+        self.problem = problem
 
 def translate_initial_state_to_particles(initial_state):
     print(initial_state)

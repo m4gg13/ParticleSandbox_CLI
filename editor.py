@@ -15,8 +15,6 @@ for i in range(width+1):
 
 # MARK: - helpers
 
-#def smth_to_json():
-
 def determine_problem_type():
     # TODO: figure out how to get inital state here
     with open("initial_state.json") as initial_state:

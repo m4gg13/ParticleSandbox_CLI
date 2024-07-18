@@ -43,16 +43,15 @@ def evolve(problem):
         JordanWignerMapper(),
         NumPyMinimumEigensolver(),
     )
+    print('execute computation on quantum computer')
     result = solver.solve(problem)
 #    print_result_details(result)
     return result
 
 def parse_result(initial_state, problem, result, initial_spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
-        # round to one decimal since results won't be exact(?)
-    initial_energy = round(result.total_energies[0], 1)
-    final_energy = round(problem.reference_energy, 1)
-    final_atoms = []
-    print_energy_details(initial_energy, final_energy)
+    initial_energy = result.initial_energy
+    final_energy = result.final_energy
+    final_atoms = result.final_atoms
     if initial_energy == final_energy:
         print("the system is the same as it was at the beginning")
         # we can return the initial state as the final state
@@ -74,11 +73,11 @@ def parse_result(initial_state, problem, result, initial_spin:int=0, do_print_al
     final_state = translate_atoms_to_state(final_atoms)
     # TODO: the charge and spin are not accurate here pretty sure
     initial_atoms = []
-    final_spin = result.spin
+    final_spin = result.final_spin
     atoms = translate_state_to_atoms(initial_state)
     initial_num_particles = atoms.count(';') + 1
-    final_num_particles = result.num_particles
-    result = '{\n'
+    final_num_particles = result.final_num_particles
+    result = '{ '
     result += '"initial_state": ' + str(initial_state) + ', '
     result += '"final_state": ' + str(final_state) + ', '
     result += '"initial_atoms": ' + str(initial_atoms) + ', '

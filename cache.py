@@ -1,7 +1,9 @@
 # sets offer O(1) time complexity for searching!
 cache = {(1, "default initial", "default final")}
+
+# example entries for testing
 cache.add((1, "H+0.0+001.0", "H+5.0+005.0"))
-cache.add((1, "HHHH+0.0-2.0", "success!!!"))
+cache.add((1, "HHHH+0.0-2.0", "HA+1.1-1.1"))
 
 def seek_time_and_initial_state_in_cache(time, initial_state_id):
     for entry in cache:

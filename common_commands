@@ -6,3 +6,4 @@ python3.11 particlesandbox.py
 
 /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages
 
+python3.12 editor.py

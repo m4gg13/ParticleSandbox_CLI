@@ -74,7 +74,8 @@ def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, print_all:bool=Fa
                               initial_num_particles,
                               final_num_particles,
                               hamiltonian,
-                              problem)
+                              problem,
+                              result)
     return result
 
 def get_json_evolution_result(state,
@@ -335,13 +336,13 @@ def evolution_to_string(evolution_state):
     evolution_str = ""
 #    str = hamiltonian_to_string(evolution_state.hamiltonian)
 #    str = str + "\n"
-    evolution_str = evolution_str + evolution_state.problem
+    evolution_str = evolution_str + str(evolution_state.problem)
     evolution_str = evolution_str + "\n"
-    evolution_str = evolution_str + evolution_state.result
+    evolution_str = evolution_str + str(evolution_state.result)
     evolution_str = evolution_str + "\n"
-    evolution_str = evolution_str + evolution_state.initial_energy
+    evolution_str = evolution_str + str(evolution_state.initial_energy)
     evolution_str = evolution_str + "\n"
-    evolution_str = evolution_str + evolution_state.final_energy
+    evolution_str = evolution_str + str(evolution_state.final_energy)
     return evolution_str
 
 def print_all(hamiltonian, problem, result, initial_energy, final_energy):
@@ -380,7 +381,8 @@ class EvolutionSummary:
                  initial_num_particles,
                  final_num_particles,
                  hamiltonian,
-                 problem):
+                 problem,
+                 result):
         self.initial_state = initial_state
         self.final_state = final_state
         self.initial_atoms = initial_atoms
@@ -393,4 +395,5 @@ class EvolutionSummary:
         self.final_num_particles = final_num_particles
         self.hamiltonian = hamiltonian
         self.problem = problem
+        self.result = result
 

@@ -94,6 +94,7 @@ def determine_matter_type(initial_state):
     # collect all of the pieces of the json object here
     # in their particle sandbox form
     matter = []
+    matter_type = ""
     for key in keys:
         match key:
             case "particle":
@@ -123,7 +124,8 @@ def determine_matter_type(initial_state):
                     matter.append(hydrogen)
                 matter_type = hydrogen.type
     return_tuple = (matter_type, matter)
-    return return_tuple
+    # return return_tuple
+    return ("atom", matter)
 
 def translate_initial_state_to_particles(initial_state):
     print(initial_state)

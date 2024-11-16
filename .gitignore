@@ -1,4 +1,8 @@
 .DS_Store
+__pycache__/simulation.cpython-312.pyc
 __pycache__/*
 build/*
 dist/*
+mpmath
+pyproject.toml
+sympy

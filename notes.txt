@@ -16,6 +16,84 @@ cleaning up in preparation for sharing!
 
 where are the rest of my notes?!?!
 
+# 12 may 2024
+
+gotta figure out getting the atoms from an id
+
+does there need to be more information stored in each id?
+
+theres definitely something missing functionality wise for having things hooked up with actual quantum computers
+how do i hook that back up?
+
+i listed out what im shooting for the other day:
+
+i would like to get to a point where
+-> there's a ui with which one can interact with the input state file
+-> there's a button one can press that triggers evolution given a perturbation
+-> there are fields that show
+
+
+
+
+# 10 may 2024
+this used to be at the top of atomproblem.parse_result(initial_state, problem, result, initial_spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
+#        # round to one decimal since results won't be exact(?)
+#    if len(result.total_energies) >= 0:
+#        energies = result.total_energies
+#        print("energies")
+#        print(energies)
+#        energy = float(energies[0])
+#        rounded_energy = round(energy, 1)
+#        initial_energy = rounded_energy
+##        initial_energy = round(float(list(result.total_energies)[0]), 1)
+#    else:
+#        initial_energy = 1.0
+##    final_energy = round(problem.reference_energy, 1)
+#    final_energy = result.final_energy
+#    final_atoms = []
+#    print_energy_details(initial_energy, final_energy)
+
+
+what really needs to be done next in the larger scale?
+
+i would like to get to a point where
+-> there's a ui with which one can interact with the input state file
+-> there's a button one can press that triggers evolution given a perturbation
+-> there are fields that show 
+
+
+
+
+
+# 5 may 2024
+this is a string layout of the config of `result`
+```
+    result = '{\n'
+    result += '"initial_state": ' + str(initial_state) + ', '
+    result += '"final_state": ' + str(final_state) + ', '
+    result += '"initial_atoms": ' + str(initial_atoms) + ', '
+    result += '"final_atoms": ' + str(final_atoms) + ', '
+    result += '"initial_energy": ' + str(initial_energy) + ', '
+    result += '"final_energy": ' + str(final_energy) + ', '
+    result += '"initial_spin": ' + str(initial_spin) + ', '
+    result += '"final_spin": ' + str(final_spin) + ', '
+    result += '"initial_num_particles": ' + str(initial_num_particles) + ', '
+    result += '"final_num_particles": ' + str(final_num_particles) + ', '
+    result += '"problem.hamiltonian": ' + str(problem.hamiltonian) + ', '
+    result += '"problem": ' + str(problem) + ' '
+    result += '}'
+```
+
+
+also, the id system
+example id: "H+0.0+001.0"
+The `H` is the `atom.symbol` of Hydrogen. There is only one character in that first section of the id
+so you can tell that there is only one piece of matter in this state
+The field after the first `+` is the value of `atom.spin` in the state.
+The final field and whichever sign `+` or `-` that is between it and the second value
+indicate the energy of the state, either `atom.energy_initial` or `atom.energy_final`.
+You'll have to determine whether a given energy is initial or final based on your
+context.
 
 
 # 22 march 2024

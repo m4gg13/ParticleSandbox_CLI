@@ -23,4 +23,7 @@ def evolve(state):
     final_particles = make_result_into_particles(result)
     # and the set of particles into json!
     final_state = translate_particles_to_final_state(final_particles)
+    # also, generate ids at this time since we have the final particles here
+    id = get_identifier_for_particles(final_particles)
+    print("id of the result state is " + id)
     return final_state

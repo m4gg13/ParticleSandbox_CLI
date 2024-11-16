@@ -15,3 +15,6 @@ class Hydrogen(Atom):
         self.electrons = 2
         self.protons = 2
         self.neutrons = 2
+        self.energy_initial = 1
+        self.energy_final = 1
+        self.spin = 1

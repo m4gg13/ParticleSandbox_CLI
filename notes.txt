@@ -1,3 +1,21 @@
+# 16 nov 2024
+
+# MARK: - notes
+#from tkinter import *
+#from tkinter import messagebox
+#top = Tk()
+#top.geometry("100x100")
+#def helloCallBack():
+#   msg=messagebox.showinfo( "Hello Python", "Hello World")
+#B = Button(top, text ="Hello", command = helloCallBack)
+#B.place(x=50,y=50)
+#top.mainloop()
+
+
+cleaning up in preparation for sharing!
+
+where are the rest of my notes?!?!
+
 # 12 may 2024
 
 gotta figure out getting the atoms from an id

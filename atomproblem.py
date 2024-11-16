@@ -14,8 +14,9 @@ import json
 def run_driver(state, basis:str="sto3g", charge:int=0, spin:int=0):
     # make atom - looks like this `"H 0 0 0; H 0 0 0.735"`
     atoms = translate_state_to_atoms(state)
+    final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin, print_all, print_comparison)
     # final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin, print_all, print_comparison)
-    final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin)
+    # final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin)
     # determine the problem
     driver = PySCFDriver(
         atom=atoms,
@@ -60,9 +61,9 @@ def parse_result(initial_state, problem, result, initial_spin:int=0, do_print_al
     elif initial_energy > final_energy:
         # the energy increased in the evolution, not sure what that would mean actually!
         print("the energy of the system increased in the evolution")
-#        final_state = state
-#    elif initial_energy < final_energy:
-#        print("the energy of the system decreased in the evolution")
+        final_state = state
+    elif initial_energy < final_energy:
+       print("the energy of the system decreased in the evolution")
 #        final_state =
 #    do_print_all = True
 #    do_print_comparison = True
@@ -90,26 +91,8 @@ def parse_result(initial_state, problem, result, initial_spin:int=0, do_print_al
                               initial_num_particles,
                               final_num_particles,
                               hamiltonian,
-                              problem)
-    initial_atoms = []    #
-    # final_spin = result.final_spin
-    # atoms = translate_state_to_atoms(initial_state)
-    # initial_num_particles = atoms.count(';') + 1
-    # final_num_particles = result.final_num_particles
-    # result = '{ '
-    # result += '"initial_state": ' + str(initial_state) + ', '
-    # result += '"final_state": ' + str(final_state) + ', '
-    # result += '"initial_atoms": ' + str(initial_atoms) + ', '
-    # result += '"final_atoms": ' + str(final_atoms) + ', '
-    # result += '"initial_energy": ' + str(initial_energy) + ', '
-    # result += '"final_energy": ' + str(final_energy) + ', '
-    # result += '"initial_spin": ' + str(initial_spin) + ', '
-    # result += '"final_spin": ' + str(final_spin) + ', '
-    # result += '"initial_num_particles": ' + str(initial_num_particles) + ', '
-    # result += '"final_num_particles": ' + str(final_num_particles) + ', '
-    # result += '"problem.hamiltonian": ' + str(problem.hamiltonian) + ', '
-    # result += '"problem": ' + str(problem) + ' '
-    # result += '}'
+                              problem,
+                              result)
     return result
 
 def get_json_evolution_result(state,
@@ -129,13 +112,6 @@ def get_json_evolution_result(state,
                                       print_all,
                                       print_comparison)
     return "{\"hydrogen\": 2}"
-
-def determine_candidate_states():
-    # 1. gotta figure out which results have the right number of atoms
-    # as those are the only ones that could possibly be correct
-    # 2. it also only makes sense that the final state energy is smller
-    # than that of the initial
-    return ""
 
 
 def translate_state_to_atoms(state):
@@ -169,16 +145,15 @@ def translate_atoms_to_state(atoms):
 
 # (state, basis, charge, spin, print_all, print_comparison)
 class AtomProblemState:
-    # def __init__(self, stage, state, atoms, basis, charge, spin, print_all, print_comparison):
-    def __init__(self, stage, state, atoms, basis, charge, spin):
+    def __init__(self, stage, state, atoms, basis, charge, spin, print_all, print_comparison):
         self.stage = stage
         self.state = state
         self.atoms = atoms
         self.basis = basis
         self.charge = charge
         self.spin = spin
-        # self.print_all = print_all
-#         self.print_comparison = print_comparison
+        self.print_all = print_all
+        self.print_comparison = print_comparison
 
 # MARK: logging
 
@@ -371,13 +346,13 @@ def evolution_to_string(evolution_state):
     evolution_str = ""
 #    str = hamiltonian_to_string(evolution_state.hamiltonian)
 #    str = str + "\n"
-    evolution_str = evolution_str + evolution_state.problem
+    evolution_str = evolution_str + str(evolution_state.problem)
     evolution_str = evolution_str + "\n"
-    evolution_str = evolution_str + evolution_state.result
+    evolution_str = evolution_str + str(evolution_state.result)
     evolution_str = evolution_str + "\n"
-    evolution_str = evolution_str + evolution_state.initial_energy
+    evolution_str = evolution_str + str(evolution_state.initial_energy)
     evolution_str = evolution_str + "\n"
-    evolution_str = evolution_str + evolution_state.final_energy
+    evolution_str = evolution_str + str(evolution_state.final_energy)
     return evolution_str
 
 def print_all(hamiltonian, problem, result, initial_energy, final_energy):
@@ -416,7 +391,8 @@ class EvolutionSummary:
                  initial_num_particles,
                  final_num_particles,
                  hamiltonian,
-                 problem):
+                 problem,
+                 result):
         self.initial_state = initial_state
         self.final_state = final_state
         self.initial_atoms = initial_atoms
@@ -429,4 +405,5 @@ class EvolutionSummary:
         self.final_num_particles = final_num_particles
         self.hamiltonian = hamiltonian
         self.problem = problem
+        self.result = result
 

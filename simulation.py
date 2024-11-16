@@ -25,44 +25,7 @@ import cacheid
 
 # MARK: logistical things
 
-# this is the old one that doesnt respond to which type of matter we're dealing with
-def run_simulation_dumb(modus_operandi, initial_state, time, forward):
-    # use the initial state to determine what particles to include
-    print("read in initial state\n")
-#    with open("initial_state.json") as initial_state_file:
-#        print(initial_state_file.read())
-#        initial_state = initial_state_file.read()
-    initial_particles = translate_initial_state_to_particles(initial_state)
-    print("get the composite hamiltonian of the initial particles\n")
-    composite_hamiltonian = 0
-    for particle in initial_particles:
-        # use the energies to make the hamiltonian
-        hamiltonian = make_sparse_pauli_op(particle, time)
-        # add the hamiltonian for that particle to the composite
-        composite_hamiltonian += hamiltonian
-    # use the composite hamiltonian and the particles to make the time evolution problem
-    print("create the time evolution problem\n")
-    print(composite_hamiltonian)
-    problem = make_time_evolution_problem(composite_hamiltonian, initial_particles, time)
-    # use trotterization to solve the problem
-    print("evolve the problem")
-    trotter = TrotterQRTE()
-    result = trotter.evolve(problem)
-    evolved_state = Statevector(result.evolved_state)
-    # dictionary of probabilities
-    amplitudes_dict = evolved_state.probabilities_dict()
-    print("amplitudes_dict\n")
-    print(amplitudes_dict)
-    # turn the result into an array of particles
-    final_particles = make_result_into_particles(result)
-    # and the set of particles into json!
-#    final_state = translate_particles_to_final_state(final_particles)
-    # write the result to the `final_state.json` file
-    with open("final_state.json") as final_state:
-        final_state = final_state.read()
-    return final_state
-
-def run_simulation(modus_operandi, initial_state_json, time, forward):
+def run_simulation(modus_operandi, initial_state, time, forward):
     # use the initial state to determine what type of matter
     (matter_type, initial_state) = determine_matter_type(initial_state_json)
     # based on the matter type, choose which model to use for hamiltonian
@@ -71,25 +34,6 @@ def run_simulation(modus_operandi, initial_state_json, time, forward):
 #            final_state_json = particleproblem.evolve(state)
         case "atom":
             final_state_json = atomproblem.get_json_evolution_result(state)
-#             print("run the driver...")
-#             problem = atomproblem.run_driver(initial_state)
-#             print("generate an identifier for this state...")
-#             initial_state_id = get_identifier_for_state(initial_state, problem)
-#             print("check the cache")
-#             final_state_id = cache.query(time, initial_state_id)
-#             if final_state_id is None:
-#                 print("evolve the problem...")
-#                 result = atomproblem.evolve(problem)
-#             else:
-#                 print("found initial state in the cache, final state id is:")
-#                 print(final_state_id)
-#                 result = translate_ids_to_result(initial_state_id, problem, final_state_id)
-#             do_print_all = False
-#             do_print_comparison = False
-# #            print("result.total_energies")
-# #            print(result.total_energies)
-#             final_state_json = atomproblem.parse_result(initial_state, problem, result, do_print_all, do_print_comparison)
-# #             = cache.query()
 #        case "molecule":
 #            final_state_json = moleculeproblem.evolve(state)
     # make the json object into a string
@@ -116,143 +60,45 @@ def determine_matter_type(initial_state):
     keys = list(initial_state_dictionary.keys())
     # collect all of the pieces of the json object here
     # in their particle sandbox form
-    matter = []
+    matter_list = []
+    matter_type = ""
     for key in keys:
         match key:
             case "particle":
                 p = particle.Particle(1)
-                matter.append(p)
+                matter_list.append(p)
                 matter_type = p.type
             case "up":
                 up = particle.UpQuark(1)
-                matter.append(up)
+                matter_list.append(up)
                 matter_type = up.type
             case "down":
                 down = particle.DownQuark(1)
-                matter.append(down)
+                matter_list.append(down)
                 matter_type = down.type
             case "proton":
                 proton = particle.Proton(1)
-                matter.append(proton)
+                matter_list.append(proton)
                 matter_type = proton.type
             case "hydrogen":
                 for h in initial_state_dictionary["hydrogen"]:
-                    hydrogen = atom.Hydrogen(1)
+                    # TODO collect the proper coordinates
+                    # coords = matter.Coordinates(0, 0, 0)
+                    coords = matter.Coordinates()
+                    coords.x = h["x"]
+                    coords.y = h["y"]
+                    coords.z = h["z"]
+                    hydrogen = atom.Hydrogen(coords)
                     # really should probably check to see whether the object has these
                     # keys before just boldly using them
-                    hydrogen.coordinates.x = h["x"]
-                    hydrogen.coordinates.y = h["y"]
-                    hydrogen.coordinates.z = h["z"]
-                    matter.append(hydrogen)
+                    # hydrogen.coordinates.x = h["x"]
+                    # hydrogen.coordinates.y = h["y"]
+                    # hydrogen.coordinates.z = h["z"]
+                    matter_list.append(hydrogen)
                 matter_type = hydrogen.type
-    return_tuple = (matter_type, matter)
-    return return_tuple
-
-def translate_ids_to_result(initial_state_id, problem, final_state_id):
-    # id goes "particles+spin+energy"
-    # there isnt a part of the id the way that it is that can
-    # effective represent this part of the state
-    initial_atoms = cacheid.get_atoms_from_id(initial_state_id)
-    # TODO NEXT 2 -> get atoms from id
-    final_atoms = cacheid.get_atoms_from_id(final_state_id)
-    initial_state = atomproblem.translate_atoms_to_state(initial_atoms)
-    final_state = atomproblem.translate_atoms_to_state(final_atoms)
-    initial_energy = cacheid.get_energy_from_id(initial_state_id)
-    final_energy = cacheid.get_energy_from_id(final_state_id)
-    print("final_state_id")
-    print(final_state_id)
-    print("cacheid.get_spin_from_id(final_state_id)")
-    print(cacheid.get_spin_from_id(final_state_id))
-    initial_spin = cacheid.get_spin_from_id(initial_state_id)
-    final_spin = cacheid.get_spin_from_id(final_state_id)
-    initial_num_particles = cacheid.get_num_particles_from_id(initial_state_id)
-    final_num_particles = cacheid.get_num_particles_from_id(final_state_id)
-    print("final_energy")
-    print(final_energy)
-#    result = {
-#        "initial_state": initial_state,
-#        "final_state": final_state,
-#        "initial_atoms": initial_atoms,
-#        "final_atoms": final_atoms,
-#        "initial_energy": initial_energy,
-#        "final_energy": final_energy,
-#        "total_energies": [final_energy],
-#        "initial_spin": initial_spin,
-#        "final_spin": final_spin,
-#        "initial_num_particles": initial_num_particles,
-#        "final_num_particles": final_num_particles,
-#        "problem.hamiltonian": problem.hamiltonian,
-#        "problem": problem
-#    }
-    result = Result(initial_state,
-                    final_state,
-                    initial_atoms,
-                    final_atoms,
-                    initial_energy,
-                    final_energy,
-                    [final_energy],
-                    initial_spin,
-                    final_spin,
-                    initial_num_particles,
-                    final_num_particles,
-                    problem)
-    return result
-
-class Result:
-    def __init__(self,
-                 initial_state,
-                 final_state,
-                 initial_atoms,
-                 final_atoms,
-                 initial_energy,
-                 final_energy,
-                 total_energies,
-                 initial_spin,
-                 final_spin,
-                 initial_num_particles,
-                 final_num_particles,
-                 problem):
-        self.initial_state = initial_state
-        self.final_state = final_state
-        self.initial_atoms = initial_atoms
-        self.final_atoms = final_atoms
-        self.initial_energy = initial_energy
-        self.final_energy = final_energy
-        self.total_energies = total_energies
-        self.initial_spin = initial_spin
-        self.final_spin = final_spin
-        self.initial_num_particles = initial_num_particles
-        self.final_num_particles = final_num_particles
-        self.problem = problem
-
-def translate_initial_state_to_particles(initial_state):
-    print(initial_state)
-    initial_state_dictionary = json.loads(initial_state)
-    keys = list(initial_state_dictionary.keys())
-    particles = []
-    for key in keys:
-        match key:
-            case "up":
-                up = particle.UpQuark(1)
-                particles.append(up)
-            case "down":
-                down = particle.DownQuark(1)
-                particles.append(down)
-            case "proton":
-                proton = particle.Proton(1)
-    return particles
-
-def translate_particles_to_final_state(particles):
-    final_state_dictionary = {}
-    for p in particles:
-        key = p.name
-        if key in final_state_dictionary.keys():
-            count = final_state_dictionary[key]
-            final_state_dictionary[key] = count + 1
-        else:
-            final_state_dictionary[key] = 1
-    final_state = json.dumps(final_state_dictionary)
-    return final_state
+    return_tuple = (matter_type, matter_list)
+    # return return_tuple
+    return ("atom", matter_list)
 
 def get_identifier_for_state(state, problem):
     print()
@@ -370,6 +216,36 @@ def get_potential_energy(particle, time):
     # ("<symbols>", [index of each of the symbols respectively], number to multiply the whole expression by)
     formatted_potential = ("Y", [n_i], 1)
     return formatted_potential
+   
+# MARK: particle things 
+def translate_initial_state_to_particles(initial_state):
+    print(initial_state)
+    initial_state_dictionary = json.loads(initial_state)
+    keys = list(initial_state_dictionary.keys())
+    particles = []
+    for key in keys:
+        match key:
+            case "up":
+                up = particle.UpQuark(1)
+                particles.append(up)
+            case "down":
+                down = particle.DownQuark(1)
+                particles.append(down)
+            case "proton":
+                proton = particle.Proton(1)
+    return particles
+
+def translate_particles_to_final_state(particles):
+    final_state_dictionary = {}
+    for p in particles:
+        key = p.name
+        if key in final_state_dictionary.keys():
+            count = final_state_dictionary[key]
+            final_state_dictionary[key] = count + 1
+        else:
+            final_state_dictionary[key] = 1
+    final_state = json.dumps(final_state_dictionary)
+    return final_state
 
 # MARK: math things
 def partial_over_partial(coordinate):

@@ -9,14 +9,19 @@ class Describable:
         return ""
 
 # TODO why can this not take params????
-class Coordinates(Describable):
-    def __init_(self):
-        super().__init_()
-        self.x = x
-        self.y = y
-        self.z = z
+class Coordinates():
+    # def __init_(self):
+    #     super().__init_()
+    #     self.x = 1
+    #     self.y = 1
+    #     self.z = 1
+    def __init_(self, x, y, z):
+        # super().__init_()
+        self.cx = x
+        self.cy = y
+        self.cz = z
     def describe(self):
-        description = str(self.x) + " "
-        description += str(self.y) + " "
-        description += str(self.z)
+        description = str(self.cx) + " "
+        description += str(self.cy) + " "
+        description += str(self.cz)
         return description

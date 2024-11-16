@@ -2,6 +2,8 @@ class Atom:
     def __init__(self):
         self.type = "atom"
         import matter
+        # TODO collect the proper coordinates
+        # self.coordinates = matter.Coordinates(0, 0, 0)
         self.coordinates = matter.Coordinates()
 
 class Hydrogen(Atom):

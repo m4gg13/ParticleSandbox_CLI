@@ -47,8 +47,8 @@ def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, print_all:bool=Fa
         # the energy increased in the evolution, not sure what that would mean actually!
         print("the energy of the system increased in the evolution")
         final_state = state
-#    elif initial_energy < final_energy:
-#        print("the energy of the system decreased in the evolution")
+    elif initial_energy < final_energy:
+       print("the energy of the system decreased in the evolution")
 #        final_state =
     if print_all:
         print_all(hamiltonian, problem, result, initial_energy, final_energy)
@@ -95,13 +95,6 @@ def get_json_evolution_result(state,
                                       print_all,
                                       print_comparison)
     return "{\"hydrogen\": 2}"
-
-def determine_candidate_states():
-    # 1. gotta figure out which results have the right number of atoms
-    # as those are the only ones that could possibly be correct
-    # 2. it also only makes sense that the final state energy is smller
-    # than that of the initial
-    return ""
 
 
 def translate_state_to_atoms(state):

@@ -70,25 +70,26 @@ def run_simulation(modus_operandi, initial_state_json, time, forward):
 #        case "particle":
 #            final_state_json = particleproblem.evolve(state)
         case "atom":
-            print("run the driver...")
-            problem = atomproblem.run_driver(initial_state)
-            print("generate an identifier for this state...")
-            initial_state_id = get_identifier_for_state(initial_state, problem)
-            print("check the cache")
-            final_state_id = cache.query(time, initial_state_id)
-            if final_state_id is None:
-                print("evolve the problem...")
-                result = atomproblem.evolve(problem)
-            else:
-                print("found initial state in the cache, final state id is:")
-                print(final_state_id)
-                result = translate_ids_to_result(initial_state_id, problem, final_state_id)
-            do_print_all = False
-            do_print_comparison = False
-#            print("result.total_energies")
-#            print(result.total_energies)
-            final_state_json = atomproblem.parse_result(initial_state, problem, result, do_print_all, do_print_comparison)
-#             = cache.query()
+            final_state_json = atomproblem.get_json_evolution_result(state)
+#             print("run the driver...")
+#             problem = atomproblem.run_driver(initial_state)
+#             print("generate an identifier for this state...")
+#             initial_state_id = get_identifier_for_state(initial_state, problem)
+#             print("check the cache")
+#             final_state_id = cache.query(time, initial_state_id)
+#             if final_state_id is None:
+#                 print("evolve the problem...")
+#                 result = atomproblem.evolve(problem)
+#             else:
+#                 print("found initial state in the cache, final state id is:")
+#                 print(final_state_id)
+#                 result = translate_ids_to_result(initial_state_id, problem, final_state_id)
+#             do_print_all = False
+#             do_print_comparison = False
+# #            print("result.total_energies")
+# #            print(result.total_energies)
+#             final_state_json = atomproblem.parse_result(initial_state, problem, result, do_print_all, do_print_comparison)
+# #             = cache.query()
 #        case "molecule":
 #            final_state_json = moleculeproblem.evolve(state)
     # make the json object into a string

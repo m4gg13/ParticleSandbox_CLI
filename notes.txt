@@ -78,8 +78,6 @@ You'll have to determine whether a given energy is initial or final based on you
 context.
 
 
-
-
 # 22 march 2024
 ok i think i figured out the "how many particles are in the end state" thing.
 it is fairly simple

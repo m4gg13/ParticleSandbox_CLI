@@ -8,8 +8,6 @@ Easily and rapidly experimenting with particle interactions may allow for experi
 
 Simulating interactions between particles is a task that requires detailed instructions on what to do in each possible case. Such a simulation should incorporate the way that different abstractions of matter like elementary particles, atoms, or molecules follow unique rulesets. 
 
-The design fundamentals of this app are primarily being configurable, modular, and scalable. It is the goal of this application to enable the user to change up variables that are taken as truth. That end will require that the user is able to configure the rules of the environment as they may. It should be easy for a user to determine how rules may be configured. A modular design that includes a map may work to that end. See `resources/diagram_16nov2024.pdf` for a map of this system. Finally, the application should allow for a scalable amount of data to operate on. It should be thoughtfully designed in a way that facilitate the user's request to process a complex input state with complex rules in place. These values should be present in further move to develop this app.
-
 ## Features
 - user interface (GUI)
     `python3 ./atom_editor.py`

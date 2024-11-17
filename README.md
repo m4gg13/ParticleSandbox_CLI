@@ -9,9 +9,9 @@ Easily and rapidly experimenting with particle interactions may allow for experi
 Simulating interactions between particles is a task that requires detailed instructions on what to do in each possible case. Such a simulation should incorporate the way that different abstractions of matter like elementary particles, atoms, or molecules follow unique rulesets. These are the reasons befind the design fundamentals of being configurable, modular, and scalable.
 
 ## Features
-- user interface
+- user interface (GUI)
     `python3 ./atom_editor.py`
-- command line tool at 
+- command line tool (CLI) at 
     `python3 ./particlesandbox.py`
 - simplifies the simulation of particle interactions with multiple options for level of abstraction
     - elementary particle
@@ -24,11 +24,15 @@ Simulating interactions between particles is a task that requires detailed instr
 
 #### Download the code
 
-There are 2 ways you may go about this. Either
+There are 2 ways you may go about this. 
+
+##### Option 1 - Download binary
+
 1. See the Github releases tab. https://github.com/m4gg13/ParticleSandbox/releases
-2. Download the latest release
-3. ?? #TODO
-or
+2. Download the latest release's binary of your choosing between GUI and CLI
+
+##### Option 2 - Python file
+
 1. Clone down the repo with the command `git clone git@github.com:m4gg13/ParticleSandbox.git`
 2. Move into the ParticleSandbox directory
 
@@ -39,7 +43,13 @@ or
 
 #### Start the app
 
-1. ?? #TODO
+##### Option 1 - Download binary
+
+1. Execute the downloaded binary
+
+##### Option 2 - Python file
+
+1. Execute the run command of the type you choose, either `python3 ./atom_editor.py` for GUI or `python3 ./particlesandbox.py` for CLI
 
 ### How to use
 

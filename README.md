@@ -6,7 +6,7 @@ A tool with which a user may provide an initial state (including a set of partic
 
 Easily and rapidly experimenting with particle interactions may allow for experimenters to gain insight into new patterns in what may otherwise be the appearance of chaos.
 
-Simulating interactions between particles is a task that requires detailed instructions on what to do in each possible case. Such a simulation should incorporate the way that different abstractions of matter like elementary particles, atoms, or molecules follow unique rulesets. 
+Simulating interactions between particles is a task that requires detailed instructions on what to do in each possible case. Such a simulation should incorporate the way that different abstractions of matter like elementary particles, atoms, or molecules follow unique rulesets. This application attempts to implement that simulation.
 
 ## Features
 - user interface (GUI)

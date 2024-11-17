@@ -1,12 +1,14 @@
 # ParticleSandbox
 
-A tool with which a user may provide an initial state (including a set of particles to begin with and values for relevant variables associated with the beginning state) in order to simulate an evolution of that state using a quantum computer. The tool's output is a set of variables associated with a time evolution of the provided initial state.
+A tool with which a user may provide an initial state (including a set of particles to begin with and values for relevant variables associated with the beginning state) in order to simulate an evolution of that state using a quantum computer. The tool's output is a set of variables associated with the result of a time evolution of the provided initial state.
 
 ## Why?
 
-Easily and rapidly experimenting with particle interactions may allow for experimenters to gain insight into patterns in the appearance of chaos.
+Easily and rapidly experimenting with particle interactions may allow for experimenters to gain insight into new patterns in what may otherwise be the appearance of chaos.
 
-Simulating interactions between particles is a task that requires detailed instructions on what to do in each possible case. Such a simulation should incorporate the way that different abstractions of matter like elementary particles, atoms, or molecules follow unique rulesets. These are the reasons befind the design fundamentals of being configurable, modular, and scalable.
+Simulating interactions between particles is a task that requires detailed instructions on what to do in each possible case. Such a simulation should incorporate the way that different abstractions of matter like elementary particles, atoms, or molecules follow unique rulesets. 
+
+The design fundamentals of this app are primarily being configurable, modular, and scalable. It is the goal of this application to enable the user to change up variables that are taken as truth. That end will require that the user is able to configure the rules of the environment as they may. It should be easy for a user to determine how rules may be configured. A modular design that includes a map may work to that end. See `resources/diagram_16nov2024.pdf` for a map of this system. Finally, the application should allow for a scalable amount of data to operate on. It should be thoughtfully designed in a way that facilitate the user's request to process a complex input state with complex rules in place. These values should be present in further move to develop this app.
 
 ## Features
 - user interface (GUI)

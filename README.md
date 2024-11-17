@@ -17,7 +17,6 @@ Simulating interactions between particles is a task that requires detailed instr
     - elementary particle
     - atom
     - molecule
-- configurable constants and rules of evolution make for endless ways to evolve the input state
 
 ## Instructions
 

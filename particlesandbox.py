@@ -38,7 +38,7 @@ def initial_state():
             print(initial_state.read())
         response = input("Is this the initial state you'd like to use?\n\nPlease say 'Yes' or 'No'\n>")
         if handle_yn_response(response, "initial_state.json") != "neither":
-                        # if they answered "neither" they need to try again
+            # if they answered "neither" they need to try again
             with open("initial_state.json") as initial_state:
                 initial_state = initial_state.read()
             error = validate_state_syntax(initial_state)
@@ -114,13 +114,13 @@ def wizard():
     print("*+>~.. PARTICLE SANDBOX ..~<+*\n\n")
     # get the initial state
     i = initial_state()
-#    particles = translate_initial_state_to_particles(i)
+    # particles = translate_initial_state_to_particles(i)
     # and print out whats going on there
-#    for p in particles:
-#        print(str(p.number))
+    # for p in particles:
+        # print(str(p.number))
     final_state = run_simulation(1, i, 1, 1)
     # get the final state
-#    final_state = translate_particles_to_final_state(particles)
+    # final_state = translate_particles_to_final_state(particles)
     # and print out whats going in in there!
     print_final_state(final_state)
     print("\n")

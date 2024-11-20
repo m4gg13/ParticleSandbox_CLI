@@ -7,17 +7,25 @@ from qiskit_nature.second_q.mappers import JordanWignerMapper
 
 import json
 
-# TODO: find a way to determine and report what the final state
-#   of the system is in terms of type like `matter`, `particle`, `atom`, `molecule`
-#   since for ex H_2 atomic input state ends up being a molecule output state
-#def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, print_all:bool=False, print_comparison:bool=False):
+import atom
+import matter
+
 def run_driver(state, basis:str="sto3g", charge:int=0, spin:int=0):
     # make atom - looks like this `"H 0 0 0; H 0 0 0.735"`
-    atoms = translate_state_to_atoms(state)
+    # atoms = translate_state_to_atoms(state)
+    # ugh translate_state_to_atoms isnt putting out properly formatted output i think
+    atoms = "H 0.0 0.0 0.0; H 0.0 0.0 0.735"
+    print_all = True
+    print_comparison = True
     final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin, print_all, print_comparison)
     # final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin, print_all, print_comparison)
     # final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin)
     # determine the problem
+    if print_all:
+        print("** atoms " + str(atoms))
+        print("** basis " + str(basis))
+        print("** charge " + str(charge))
+        print("** spin " + str(spin))
     driver = PySCFDriver(
         atom=atoms,
         basis=basis,
@@ -29,25 +37,23 @@ def run_driver(state, basis:str="sto3g", charge:int=0, spin:int=0):
     return problem
 
 # TODO
-# 1. make a param that controls whether comparison is printed
-# 2. find a way to determine and report what the final state
+#  find a way to determine and report what the final state
 #   of the system is in terms of type like `matter`, `particle`, `atom`, `molecule`
 #   since for ex H_2 atomic input state ends up being a molecule output state
-#def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
-def evolve(problem):
-#    problem = runDriver(state, basis, charge, spin)
+def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
+    problem = run_driver(state, basis, charge, spin)
     hamiltonian = problem.hamiltonian
-#    print_hamiltonian_details(hamiltonian)
-    # hamiltonian.nuclear_repulsion_energy  # NOT included in the second_q_op above
-#    print_problem_details(problem)
-    # now make the solver
+    if do_print_all:
+        print_hamiltonian_details(hamiltonian)
+        print_problem_details(problem)
     solver = GroundStateEigensolver(
         JordanWignerMapper(),
         NumPyMinimumEigensolver(),
     )
     print('execute computation on quantum computer')
     result = solver.solve(problem)
-#    print_result_details(result)
+    if do_print_all:
+        print_result_details(result)
     return result
 
 def parse_result(initial_state, problem, result, initial_spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
@@ -56,17 +62,14 @@ def parse_result(initial_state, problem, result, initial_spin:int=0, do_print_al
     final_atoms = result.final_atoms
     if initial_energy == final_energy:
         print("the system is the same as it was at the beginning")
-        # we can return the initial state as the final state
+        # the initial state can then be returned as the final state
         final_atoms = initial_state
     elif initial_energy > final_energy:
-        # the energy increased in the evolution, not sure what that would mean actually!
         print("the energy of the system increased in the evolution")
-        final_state = state
+        # TODO - what happens now?
     elif initial_energy < final_energy:
        print("the energy of the system decreased in the evolution")
-#        final_state =
-#    do_print_all = True
-#    do_print_comparison = True
+       # TODO - what happens now?
     if do_print_all:
         print_all(problem.hamiltonian, problem, result, initial_energy, final_energy)
     max_problem_energy = find_max_energy(problem)
@@ -95,14 +98,15 @@ def parse_result(initial_state, problem, result, initial_spin:int=0, do_print_al
                               result)
     return result
 
-def get_json_evolution_result(state,
+def get_json_evolution_result(initial_state,
                               basis:str="sto3g",
                               charge:int=0, spin:int=0,
                               print_all:bool=False,
                               print_comparison:bool=False):
-    result = evolve(state, basis, charge, spin, print_all, print_comparison)
-    final_state = result.final_state
-    final_atoms = result.final_atoms
+    evolve_result = evolve(initial_state, basis, charge, spin, print_all, print_comparison)
+    # TODO - not sure of a way so far to make `result` into `final_state` or `final_atoms`
+    final_state = initial_state
+    final_atoms = translate_state_to_atoms(initial_state)
     final_stateobj = AtomProblemState("final",
                                       final_state,
                                       final_atoms,
@@ -125,6 +129,8 @@ def translate_state_to_atoms(state):
         match atom.name:
             case "hydrogen":
                 # make atom - looks like this for example `"H 0 0 0; H 0 0 0.735"`
+                # print("** atom.coordinates " + str(vars(atom.coordinates)))
+                # print("** atom.coordinates.x " + str(atom.coordinates.x))
                 coordinates = atom.coordinates.describe()
                 final_atoms = final_atoms + "H " + coordinates
         i+=1
@@ -143,7 +149,6 @@ def translate_atoms_to_state(atoms):
     final_state = json.dumps(final_state_dictionary)
     return final_state
 
-# (state, basis, charge, spin, print_all, print_comparison)
 class AtomProblemState:
     def __init__(self, stage, state, atoms, basis, charge, spin, print_all, print_comparison):
         self.stage = stage
@@ -158,31 +163,11 @@ class AtomProblemState:
 # MARK: logging
 
 def find_max_energy(problem):
-    # list(problem.second_q_ops()[0].items())[0][1]
-#    print("list(problem.second_q_ops()[0].items())[0][1]")
-#    print(list(problem.second_q_ops()[0].items())[0][1])
-#    print("list(problem.second_q_ops()[0].items())[1][1]")
-#    print(list(problem.second_q_ops()[0].items())[1][1])
-#    print("list(problem.second_q_ops()[0].items())[2][1]")
-#    print(list(problem.second_q_ops()[0].items())[2][1])
-#    print("list(problem.second_q_ops()[0].items())[3][1]")
-#    print(list(problem.second_q_ops()[0].items())[3][1])
-#    print("list(problem.second_q_ops()[0].items())[4][1]")
-#    print(list(problem.second_q_ops()[0].items())[4][1])
-    #
     i = 0
     max = 0.0
     while i < 36:
-#        print("abs(list(problem.second_q_ops()[0].items())[i][1]) > abs(max):")
-#        print(abs(list(problem.second_q_ops()[0].items())[i][1]) > abs(max))
-#        print("abs(list(problem.second_q_ops()[0].items())[i][1]):")
-#        print(abs(list(problem.second_q_ops()[0].items())[i][1]))
-#        print("max:")
-#        print(max)
         if abs(list(problem.second_q_ops()[0].items())[i][1]) > abs(max):
             max = list(problem.second_q_ops()[0].items())[i][1]
-#            print("new max:")
-#            print(max)
         i += 1
     print("max energy:")
     print(max)
@@ -257,44 +242,6 @@ def print_problem_details(problem):
     print("-----")
     print("list(problem.second_q_ops()[1].items())[5]:")
     print(list(problem.second_q_ops()[1].items())[5])
-
-#    print("problem.second_q_ops()[0]:")
-#    print(problem.second_q_ops()[0])
-#    print("problem.second_q_ops()[0].keys():")
-#    print(problem.second_q_ops()[0].keys())
-
-#    print("list(problem.second_q_ops()[0].keys())[0]:")
-#    print(list(problem.second_q_ops()[0].keys())[0])
-#    print("list(problem.second_q_ops()[0].items())[0]:")
-#    print(list(problem.second_q_ops()[0].items())[0])
-#    print("list(problem.second_q_ops()[0].items())[0][0]:")
-#    print(list(problem.second_q_ops()[0].items())[0][0])
-#    print("list(problem.second_q_ops()[0].items())[0][1]:")
-#    print(list(problem.second_q_ops()[0].items())[0][1])
-#
-#    print("list(problem.second_q_ops()[0].keys())[1]:")
-#    print(list(problem.second_q_ops()[0].keys())[1])
-#    print("list(problem.second_q_ops()[0].items())[1]:")
-#    print(list(problem.second_q_ops()[0].items())[1])
-#
-#    print("list(problem.second_q_ops()[0].keys())[2]:")
-#    print(list(problem.second_q_ops()[0].keys())[2])
-#    print("list(problem.second_q_ops()[0].items())[2]:")
-#    print(list(problem.second_q_ops()[0].items())[2])
-#
-#    print("list(problem.second_q_ops()[0].keys())[3]:")
-#    print(list(problem.second_q_ops()[0].keys())[3])
-#    print("list(problem.second_q_ops()[0].items())[3]:")
-#    print(list(problem.second_q_ops()[0].items())[3])
-#
-#    print("list(problem.second_q_ops()[0].keys())[4]:")
-#    print(list(problem.second_q_ops()[0].keys())[4])
-#    print("list(problem.second_q_ops()[0].items())[4]:")
-#    print(list(problem.second_q_ops()[0].items())[4])
-#
-#    print("list(problem.second_q_ops()[1].keys()):")
-#    print(list(problem.second_q_ops()[1].keys()))
-#
 #    print("problem.second_q_ops()[0].items():")
 #    print(problem.second_q_ops()[0].items())
 #    print("problem.properties.particle_number:")
@@ -325,8 +272,7 @@ def print_result_details(result):
 #    print(result.groundstate)
     print("result.total_energies:")
     print(result.total_energies)
-    # this rounded result.total_energies: isnt always available i guess
-    # but it is helpful!
+    # this rounded result.total_energies: isnt always available
 #    print("rounded result.total_energies:")
 #    print(round(result.total_energies, 2))
     print("formatted:")
@@ -361,10 +307,6 @@ def print_all(hamiltonian, problem, result, initial_energy, final_energy):
     print_result_details(result)
     print_energy_details(initial_energy, final_energy)
 
-# TODO
-# trying to collect information about initial and final states so that i can tell
-# what a state turns into on the other side
-# under the changes of different variables too. thinking of writing tests for this
 def print_problem_result(problem, result, max_problem_energy, initial_energy, final_energy, initial_spin:int=0):
     print("|||||")
     print("| PROBLEM LABEL | RESULT LABEL | PROBLEM | RESULT |")

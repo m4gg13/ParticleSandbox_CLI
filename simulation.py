@@ -27,13 +27,13 @@ import cacheid
 
 def run_simulation(modus_operandi, initial_state, time, forward):
     # use the initial state to determine what type of matter
-    (matter_type, initial_state) = determine_matter_type(initial_state_json)
+    (matter_type, initial_state) = determine_matter_type(initial_state) # previously initial_state_json
     # based on the matter type, choose which model to use for hamiltonian
     match matter_type:
 #        case "particle":
 #            final_state_json = particleproblem.evolve(state)
         case "atom":
-            final_state_json = atomproblem.get_json_evolution_result(state)
+            final_state_json = atomproblem.get_json_evolution_result(initial_state)
 #        case "molecule":
 #            final_state_json = moleculeproblem.evolve(state)
     # make the json object into a string
@@ -83,8 +83,8 @@ def determine_matter_type(initial_state):
             case "hydrogen":
                 for h in initial_state_dictionary["hydrogen"]:
                     # TODO collect the proper coordinates
-                    # coords = matter.Coordinates(0, 0, 0)
-                    coords = matter.Coordinates()
+                    coords = matter.Coordinates(0, 0, 0)
+                    # coords = matter.Coordinates()
                     coords.x = h["x"]
                     coords.y = h["y"]
                     coords.z = h["z"]

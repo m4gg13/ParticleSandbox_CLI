@@ -3,8 +3,8 @@ class Atom:
         self.type = "atom"
         import matter
         # TODO collect the proper coordinates
-        # self.coordinates = matter.Coordinates(0, 0, 0)
-        self.coordinates = matter.Coordinates()
+        self.coordinates = matter.Coordinates(0, 1, 2)
+        # self.coordinates = matter.Coordinates()
 
 class Hydrogen(Atom):
     def __init__(self, number):

@@ -1,5 +1,8 @@
 # ParticleSandbox
 
+<img width="812" alt="Screenshot 2024-11-16 at 8 56 36 PM" src="https://github.com/user-attachments/assets/4c1cce20-57f5-4d01-b675-d6d3ad2ee68a">
+
+
 A tool with which a user may provide an initial state (including a set of particles to begin with and values for relevant variables associated with the beginning state) in order to simulate an evolution of that state using a quantum computer. The tool's output is a set of variables associated with the result of a time evolution of the provided initial state.
 
 ## Why?

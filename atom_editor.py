@@ -5,7 +5,7 @@ import simulation
 import atomproblem
 
 window = tk.Tk()
-window.geometry("700x900")
+window.geometry("700x1000")
 
 width = 3
 for i in range(width+1):
@@ -14,6 +14,7 @@ for i in range(width+1):
 # MARK: - helpers
 
 # MARK: - rows
+# angular momentum, magnetization
 atom_row = 2
 type_row = atom_row + 1
 basis_row = atom_row + 1
@@ -22,7 +23,9 @@ spin_row = charge_row + 1
 particle_row = spin_row + 1
 energy_row = particle_row + 1
 particle_no_row = energy_row + 1
-action_button_row = particle_no_row + 1
+angular_momentum_row = particle_no_row + 1
+magnetization_row = angular_momentum_row + 1
+action_button_row = magnetization_row + 1
 state_chooser_row = action_button_row + 1
 console_row = state_chooser_row + 1
 
@@ -52,36 +55,82 @@ tk.Label(window, text="FINAL").grid(row = type_row, column = 2)
 tk.Label(window, text="CHARGE").grid(row = charge_row, column = 0)
 c1 = tk.Entry(window, width = 20)
 c1.grid(row = charge_row, column = 1)
-c2 = tk.Entry(window)
-c2.grid(row = charge_row, column = 2)
+# c2 = tk.Entry(window)
+# c2.grid(row = charge_row, column = 2)
 
 tk.Label(window, text="SPIN").grid(row = spin_row, column = 0)
 s1 = tk.Entry(window, width = 20)
 s1.grid(row = spin_row, column = 1)
-s2 = tk.Entry(window)
-s2.grid(row = spin_row, column = 2)
+# s2 = tk.Entry(window)
+# s2.grid(row = spin_row, column = 2)
 
 tk.Label(window, text="ENERGY").grid(row = energy_row, column = 0)
 e1 = tk.Entry(window, width = 20)
 e1.grid(row = energy_row, column = 1)
+e1.insert(0, "0")
+e1.config(state="disabled")
 e2 = tk.Entry(window)
 e2.grid(row = energy_row, column = 2)
 
 tk.Label(window, text="PARTICLE #").grid(row = particle_no_row, column = 0)
 p1 = tk.Entry(window, width = 20)
 p1.grid(row = particle_no_row, column = 1)
+p1.insert(0, "need to sort this part out...")
+p1.config(state=tk.DISABLED)
 p2 = tk.Entry(window)
 p2.grid(row = particle_no_row, column = 2)
 
+tk.Label(window, text="ANGULAR MOMENTUM").grid(row = angular_momentum_row, column = 0)
+am1 = tk.Entry(window, width = 20)
+am1.grid(row = angular_momentum_row, column = 1)
+am1.config(state=tk.DISABLED)
+am2 = tk.Entry(window)
+am2.grid(row = angular_momentum_row, column = 2)
+
+tk.Label(window, text="MAGNETIZATION").grid(row = magnetization_row, column = 0)
+mz1 = tk.Entry(window, width = 20)
+mz1.grid(row = magnetization_row, column = 1)
+mz1.config(state=tk.DISABLED)
+mz2 = tk.Entry(window)
+mz2.grid(row = magnetization_row, column = 2)
+
 console = tk.scrolledtext.ScrolledText(window, wrap=tk.WORD)
 
-def print_to_entries(result):
-    s2.delete(0, tk.END)
+def print_to_entries(input):
+    # c2.delete(0, tk.END)
+    # s2.delete(0, tk.END)
     e2.delete(0, tk.END)
     p2.delete(0, tk.END)
-    s2.insert(0, result.result.spin)
-    e2.insert(0, result.final_energy)
-    p2.insert(0, result.final_num_particles)
+    am2.delete(0, tk.END)
+    mz2.delete(0, tk.END)
+    print("to entries input")
+    print(vars(input))
+    print(vars(input.properties))
+    properties = input.properties
+    # print("properties.AngularMomentum")
+    # print(properties.AngularMomentum)
+    atomproblem.print_problem_details(input)
+    # s2.insert(0, result.final_spin)
+    e2.insert(0, input.reference_energy)
+    p2.insert(0, input.properties.particle_number.num_spatial_orbitals)
+    print("input.properties.particle_number.num_spatial_orbitals")
+    print(input.properties.particle_number.num_spatial_orbitals)
+    # print("vars(input.properties.angular_momentum.num_spatial_orbitals)")
+    # print(vars(input.properties.angular_momentum.num_spatial_orbitals))
+    am2.insert(0, input.properties.angular_momentum.num_spatial_orbitals)
+    # print("vars(input.properties.magnetization.num_spatial_orbitals)")
+    # print(vars(input.properties.magnetization.num_spatial_orbitals))
+    mz2.insert(0, input.properties.magnetization.num_spatial_orbitals)
+
+def print_to_initial_entries(problem):
+    am1.delete(0, tk.END)
+    am1.config(state="normal")
+    am1.insert(0, problem.properties.particle_number.num_spatial_orbitals)
+    am1.config(state="disabled")
+    mz1.delete(0, tk.END)
+    mz1.config(state="normal")
+    mz1.insert(0, problem.properties.particle_number.num_spatial_orbitals)
+    mz1.config(state="disabled")
 
 def print_to_console(evolution_state):
     str = atomproblem.evolution_to_string(evolution_state)
@@ -91,11 +140,6 @@ def print_to_console(evolution_state):
 def print_string_to_console(str):
     console.insert(tk.END, str)
     console.insert(tk.END, '\n')
-
-def runButton():
-    evolution_state = determine_problem_type()
-    # print_to_entries(evolution_state)
-    print_to_console(evolution_state)
     
 def determine_problem_type(initial_state, charge:int=0, spin:int=0):
     (matter_type, state) = simulation.determine_matter_type(initial_state)
@@ -109,8 +153,14 @@ def determine_problem_type(initial_state, charge:int=0, spin:int=0):
         case "atom":
             print_string_to_console("atom matter_type")
             print_string_to_console(state)
-            # result here is of type EvolutionSummary
-            result = atomproblem.evolve(state, basis, charge, spin, print_all, print_comparison)
+            problem = atomproblem.run_driver(state, basis, charge, spin)
+            print_to_initial_entries(problem)
+            print_string_to_console("--PROBLEM--")
+            print_string_to_console(problem)
+            print_to_entries(problem)
+            result = atomproblem.evolve(problem)
+            print_string_to_console("--RESULT--")
+            print_string_to_console(result)
 #        case "molecule":
 #            final_state_json = moleculeproblem.evolve(state)
     return result
@@ -127,7 +177,7 @@ def retrieveInput():
     # b2_input = b2.get()
     # charge
     c1_input = int(c1.get())
-    c2_input = c2.get()
+    # c2_input = c2.get()
     # spin
     s1_input = int(s1.get())
     # energy - TODO get this to be used again
@@ -137,8 +187,9 @@ def retrieveInput():
     # p1_input = p1.get()
     # p2_input = p2.get()
     evolution_state = determine_problem_type(st1_input, int(c1_input), int(s1_input))
-    print_to_entries(evolution_state)
-    print_to_console(evolution_state)
+    # print_to_console(evolution_state)
+    print("evolution_state")
+    print(vars(evolution_state))
 
 tk.Button(window, text='RUN', command = retrieveInput).grid(row=action_button_row, column=0)
 

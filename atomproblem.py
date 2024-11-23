@@ -244,14 +244,14 @@ def print_problem_details(problem):
     print(list(problem.second_q_ops()[1].items())[5])
 #    print("problem.second_q_ops()[0].items():")
 #    print(problem.second_q_ops()[0].items())
-#    print("problem.properties.particle_number:")
-#    print(problem.properties.particle_number)
-#    print("problem.properties.angular_momentum:")
-#    print(problem.properties.angular_momentum)
-#    print("problem.properties.magnetization:")
-#    print(problem.properties.magnetization)
-#    print("problem.properties.electronic_dipole_moment:")
-#    print(problem.properties.electronic_dipole_moment)
+    print("problem.properties.particle_number:")
+    print(vars(problem.properties.particle_number))
+    print("problem.properties.angular_momentum:")
+    print(vars(problem.properties.angular_momentum))
+    print("problem.properties.magnetization:")
+    print(vars(problem.properties.magnetization))
+    print("problem.properties.electronic_dipole_moment:")
+    print(vars(problem.properties.electronic_dipole_moment))
     print("----------")
 
 def print_result_details(result):
@@ -278,6 +278,60 @@ def print_result_details(result):
     print("formatted:")
     print(result.formatted())
     print(result)
+    print("----------")
+
+# {'eigenvalues': array([-1.85727503]), 
+# 'eigenstates': [(<qiskit.circuit.quantumcircuit.QuantumCircuit object at 0x17ab89310>, None)], 
+# 'aux_operators_evaluated': [
+# {'AngularMomentum': 0.0, 
+# 'Magnetization': 0.0, 
+# 'ParticleNumber': (1.999999999999999-4.367323741608634e-17j), 
+# 'XDipole': 0.0, 
+# 'YDipole': 0.0, 
+# 'ZDipole': (1.38894870155532+7.882858934352203e-18j)}
+# ], 
+# 'raw_result': <qiskit_algorithms.minimum_eigensolvers.numpy_minimum_eigensolver.NumPyMinimumEigensolverResult object at 0x14b64a010>, 
+# 'formatting_precision': 12, 
+# '_hartree_fock_energy': -1.116998996754004, 
+# '_nuclear_repulsion_energy': 0.7199689944489797, 
+# '_nuclear_dipole_moment': array([0.       , 0.       , 1.3889487]), 
+# '_computed_energies': array([-1.85727503]), 
+# '_computed_dipole_moment': [(0.0, 0.0, 1.38894870155532)], 
+# '_extracted_transformer_energies': {}, 
+# '_extracted_transformer_dipoles': [{}], 
+# '_reverse_dipole_sign': True, 
+# '_num_particles': [1.999999999999999], 
+# '_magnetization': [0.0], 
+# '_total_angular_momentum': [0.0], 
+# '_electronic_density': None}
+def print_evolution_state(evolution_state):
+    print("-----RESULT-----")
+    print("eigenvalues:")
+    print(result.eigenvalues)
+    print("eigenstates:")
+    print(vars(result.eigenstates))
+    print("aux_operators_evaluated:")
+    print(aux_operators_evaluated)
+    # print("spin:")
+    # print(result.spin)
+    # print("result.computed_energies:")
+    # print(result.computed_energies)
+    # print("result.electronic_energies:")
+    # print(result.electronic_energies)
+#    print("result.frozen_extracted_energy:")
+#    print(result.frozen_extracted_energy)
+    # print("result.groundenergy:")
+    # print(result.groundenergy)
+#    print("result.groundstate:")
+#    print(result.groundstate)
+    # print("result.total_energies:")
+    # print(result.total_energies)
+    # this rounded result.total_energies: isnt always available
+#    print("rounded result.total_energies:")
+#    print(round(result.total_energies, 2))
+    print("formatted:")
+    print(result.formatted())
+    # print(result)
     print("----------")
 
 def print_energy_details(initial_energy, final_energy):

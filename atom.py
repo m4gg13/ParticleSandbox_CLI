@@ -7,7 +7,7 @@ class Atom:
         # self.coordinates = matter.Coordinates()
 
 class Hydrogen(Atom):
-    def __init__(self, number):
+    def __init__(self, number, coordinates):
         super().__init__()
         self.name = "hydrogen"
         self.symbol = "H"
@@ -18,3 +18,4 @@ class Hydrogen(Atom):
         self.energy_initial = 1
         self.energy_final = 1
         self.spin = 1
+        self.coordinates = coordinates

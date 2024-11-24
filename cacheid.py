@@ -1,4 +1,5 @@
 import atom
+import matter
 
 def get_atoms_from_id(id):
     # at first the id is like this 'HHHH+0.0-2.0'
@@ -9,7 +10,7 @@ def get_atoms_from_id(id):
         for char in particles[0]:
             match char:
                 case "H":
-                    atoms.append(atom.Hydrogen(3))
+                    atoms.append(atom.Hydrogen(3, matter.Coordinates(0.0, 0.0, 0.0)))
     return atoms
 
 def get_num_particles_from_id(id):
@@ -65,10 +66,10 @@ def test_get_atoms_from_id():
     print("get_atoms_from_id('HHHH+0.0-2.0')")
     a = get_atoms_from_id("HHHH+0.0-2.0")
     print(str(a))
-    h1 = atom.Hydrogen(4)
-    h2 = atom.Hydrogen(5)
-    h3 = atom.Hydrogen(6)
-    h4 = atom.Hydrogen(7)
+    h1 = atom.Hydrogen(4, matter.Coordinates(0.0, 0.0, 0.0))
+    h2 = atom.Hydrogen(5, matter.Coordinates(0.0, 0.0, 0.0))
+    h3 = atom.Hydrogen(6, matter.Coordinates(0.0, 0.0, 0.0))
+    h4 = atom.Hydrogen(7, matter.Coordinates(0.0, 0.0, 0.0))
     e = [h1, h2, h3, h4]
     print(str(a) + " == " + str(e) + " : " + str((str(a) == str(e))))
 

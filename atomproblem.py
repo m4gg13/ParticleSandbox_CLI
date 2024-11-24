@@ -14,7 +14,10 @@ def run_driver(state, basis:str="sto3g", charge:int=0, spin:int=0):
     # make atom - looks like this `"H 0 0 0; H 0 0 0.735"`
     # atoms = translate_state_to_atoms(state)
     # ugh translate_state_to_atoms isnt putting out properly formatted output i think
-    atoms = "H 0.0 0.0 0.0; H 0.0 0.0 0.735"
+    # atoms = "H 0.0 0.0 0.0; H 0.0 0.0 0.735"
+    # atoms = "H 0.0 0.0 0.0; H 0.0 0.0 0.735; H 0.0 1.0 2.0; H 0.0 1.0 2.0"
+    # atoms = "H 0.0 0.0 0.0; H 0.0 0.0 0.735; H 0.0 0.0 0.745"
+    atoms = translate_state_to_atoms(state)
     print_all = True
     print_comparison = True
     final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin, print_all, print_comparison)
@@ -22,6 +25,10 @@ def run_driver(state, basis:str="sto3g", charge:int=0, spin:int=0):
     # final_stateobj = AtomProblemState("initial", state, atoms, basis, charge, spin)
     # determine the problem
     if print_all:
+        print("** state " + str(state))
+        print("** 0 coords " + str(state[0].coordinates.x))
+        print("** 0 coords " + str(state[0].coordinates.y))
+        print("** 0 coords " + str(state[0].coordinates.z))
         print("** atoms " + str(atoms))
         print("** basis " + str(basis))
         print("** charge " + str(charge))
@@ -36,11 +43,7 @@ def run_driver(state, basis:str="sto3g", charge:int=0, spin:int=0):
     problem = driver.run()
     return problem
 
-# TODO
-#  find a way to determine and report what the final state
-#   of the system is in terms of type like `matter`, `particle`, `atom`, `molecule`
-#   since for ex H_2 atomic input state ends up being a molecule output state
-def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
+def evolve_ret_problem(state, basis:str="sto3g", charge:int=0, spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
     problem = run_driver(state, basis, charge, spin)
     hamiltonian = problem.hamiltonian
     if do_print_all:
@@ -54,6 +57,14 @@ def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, do_print_all:bool
     result = solver.solve(problem)
     if do_print_all:
         print_result_details(result)
+    return (problem, result)
+
+# TODO
+#  find a way to determine and report what the final state
+#   of the system is in terms of type like `matter`, `particle`, `atom`, `molecule`
+#   since for ex H_2 atomic input state ends up being a molecule output state
+def evolve(state, basis:str="sto3g", charge:int=0, spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
+    (problem, result) = evolve_ret_problem(state, basis, charge, spin, do_print_all, do_print_comparison)
     return result
 
 def parse_result(initial_state, problem, result, initial_spin:int=0, do_print_all:bool=False, do_print_comparison:bool=False):
@@ -107,6 +118,9 @@ def get_json_evolution_result(initial_state,
     # TODO - not sure of a way so far to make `result` into `final_state` or `final_atoms`
     final_state = initial_state
     final_atoms = translate_state_to_atoms(initial_state)
+    print('===== final_atoms =====')
+    print(final_atoms)
+    print('============')
     final_stateobj = AtomProblemState("final",
                                       final_state,
                                       final_atoms,
@@ -116,6 +130,31 @@ def get_json_evolution_result(initial_state,
                                       print_all,
                                       print_comparison)
     return "{\"hydrogen\": 2}"
+
+def get_json_evolution_result_atom_editor(initial_state,charge:int=0, spin:int=0):
+    basis = "sto3g"
+    print_all = True
+    print_comparison = True
+    (evolve_problem, evolve_result) = evolve_ret_problem(initial_state, basis, charge, spin, print_all, print_comparison)
+    # TODO - not sure of a way so far to make `result` into `final_state` or `final_atoms`
+    # final_state = initial_state
+    final_atoms = translate_state_to_atoms(initial_state)
+    print('===== final_atoms =====')
+    print(final_atoms)
+    print('============')
+    final_state = translate_atoms_to_state(initial_state)
+    print('===== final_state =====')
+    print(final_state)
+    print('============')
+    final_stateobj = AtomProblemState("final",
+                                      final_state,
+                                      final_atoms,
+                                      basis,
+                                      charge,
+                                      spin,
+                                      print_all,
+                                      print_comparison)
+    return (evolve_problem, final_state)
 
 
 def translate_state_to_atoms(state):

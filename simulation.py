@@ -56,6 +56,9 @@ def count_qubits_required():
 def determine_matter_type(initial_state):
     # make `initial_state` string into json object
     initial_state_dictionary = json.loads(initial_state)
+    print("+++++ initial_state_dictionary +++++++")
+    print(initial_state_dictionary)
+    print("+++++++++++++++++++++++++++++++++++++++")
     # need to peek at each piece of the json object
     keys = list(initial_state_dictionary.keys())
     # collect all of the pieces of the json object here
@@ -82,13 +85,20 @@ def determine_matter_type(initial_state):
                 matter_type = proton.type
             case "hydrogen":
                 for h in initial_state_dictionary["hydrogen"]:
+                    print("+++++ 1 hydrogen +++++++")
+                    print(h)
+                    print(float(h["z"]))
+                    # print("+++++++++++++++++++++++++++++++++++++++")
                     # TODO collect the proper coordinates
-                    coords = matter.Coordinates(0, 0, 0)
+                    coords = matter.Coordinates(0.0, 0.0, 0.0)
                     # coords = matter.Coordinates()
-                    coords.x = h["x"]
-                    coords.y = h["y"]
-                    coords.z = h["z"]
-                    hydrogen = atom.Hydrogen(coords)
+                    coords.x = float(h["x"])
+                    coords.y = float(h["y"])
+                    coords.z = float(h["z"])
+                    hydrogen = atom.Hydrogen(2, coords)
+                    print(float(coords.z))
+                    print(float(hydrogen.coordinates.z))
+                    print("+++++++++++++++++++++++++++++++++++++++")
                     # really should probably check to see whether the object has these
                     # keys before just boldly using them
                     # hydrogen.coordinates.x = h["x"]

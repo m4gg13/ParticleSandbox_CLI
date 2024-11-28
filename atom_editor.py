@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 
+import json
+import random
+
+import atom
 import simulation
 import atomproblem
 
@@ -102,10 +106,6 @@ console = tk.scrolledtext.ScrolledText(window, wrap=tk.WORD)
 def print_to_entries(input):
     # c2.delete(0, tk.END)
     # s2.delete(0, tk.END)
-    e2.delete(0, tk.END)
-    p2.delete(0, tk.END)
-    am2.delete(0, tk.END)
-    mz2.delete(0, tk.END)
     print("to entries input")
     print(vars(input))
     print(vars(input.properties))
@@ -115,9 +115,11 @@ def print_to_entries(input):
     atomproblem.print_problem_details(input)
     # s2.insert(0, result.final_spin)
     e2.config(state="normal")
+    e2.delete(0, tk.END)
     e2.insert(0, input.reference_energy)
     e2.config(state="disabled")
     p2.config(state="normal")
+    p2.delete(0, tk.END)
     p2.insert(0, input.properties.particle_number.num_spatial_orbitals)
     p2.config(state="disabled")
     print("input.properties.particle_number.num_spatial_orbitals")
@@ -125,11 +127,13 @@ def print_to_entries(input):
     # print("vars(input.properties.angular_momentum.num_spatial_orbitals)")
     # print(vars(input.properties.angular_momentum.num_spatial_orbitals))
     am2.config(state="normal")
+    am2.delete(0, tk.END)
     am2.insert(0, input.properties.angular_momentum.num_spatial_orbitals)
     am2.config(state="disabled")
     # print("vars(input.properties.magnetization.num_spatial_orbitals)")
     # print(vars(input.properties.magnetization.num_spatial_orbitals))
     mz2.config(state="normal")
+    mz2.delete(0, tk.END)
     mz2.insert(0, input.properties.magnetization.num_spatial_orbitals)
     mz2.config(state="disabled")
 
@@ -138,16 +142,16 @@ def print_to_initial_entries(problem):
     # .config(state="normal")
     # .insert(0, problem.properties.particle_number.num_spatial_orbitals)
     # .config(state="disabled")
-    p1.delete(0, tk.END)
     p1.config(state="normal")
+    p1.delete(0, tk.END)
     p1.insert(0, problem.properties.particle_number.num_spatial_orbitals)
     p1.config(state="disabled")
-    am1.delete(0, tk.END)
     am1.config(state="normal")
+    am1.delete(0, tk.END)
     am1.insert(0, problem.properties.particle_number.num_spatial_orbitals)
     am1.config(state="disabled")
-    mz1.delete(0, tk.END)
     mz1.config(state="normal")
+    mz1.delete(0, tk.END)
     mz1.insert(0, problem.properties.particle_number.num_spatial_orbitals)
     mz1.config(state="disabled")
 
@@ -178,6 +182,7 @@ def determine_problem_type(initial_state, charge:int=0, spin:int=0):
             print_string_to_console(state[1].coordinates.x)
             print_string_to_console(state[1].coordinates.y)
             print_string_to_console(state[1].coordinates.z)
+            print_string_to_console("running driver...")
             (problem, final_state_json) = atomproblem.get_json_evolution_result_atom_editor(state, charge, spin)
             print_to_initial_entries(problem)
             print_string_to_console("--PROBLEM--")
@@ -193,6 +198,8 @@ def determine_problem_type(initial_state, charge:int=0, spin:int=0):
 
 # MARK: Action Button Section
 def retrieveInput():
+    resetDisabledFields()
+    print_string_to_console('✩₊˚.⋆☾⋆⁺₊✧ RUN OUTPUT ✩₊˚.⋆☾⋆⁺₊✧')
     # state
     st1_input = str(st1.get("1.0", tk.END))
     print_string_to_console(st1_input)
@@ -216,12 +223,105 @@ def retrieveInput():
     # print_to_console(evolution_state)
     print("evolution_state")
     print(evolution_state)
+    print_string_to_console('✩₊˚.⋆☾⋆⁺₊✧✩₊˚.⋆☾⋆⁺₊✧✩₊˚.⋆☾⋆⁺₊✧\n\n\n')
+
+def resetInitialStateField():
+    st1.delete("1.0", tk.END)
+
+def resetDisabledFields():
+    e2.config(state="normal")
+    e2.delete(0, tk.END)
+    e2.config(state="disabled")
+    p1.config(state="normal")
+    p1.delete(0, tk.END)
+    p1.config(state="disabled")
+    p2.config(state="normal")
+    p2.delete(0, tk.END)
+    p2.config(state="disabled")
+    am1.config(state="normal")
+    am1.delete(0, tk.END)
+    am1.config(state="disabled")
+    am2.config(state="normal")
+    am2.delete(0, tk.END)
+    am2.config(state="disabled")
+    mz1.config(state="normal")
+    mz1.delete(0, tk.END)
+    mz1.config(state="disabled")
+    mz2.config(state="normal")
+    mz2.delete(0, tk.END)
+    mz2.config(state="disabled")
+
+def resetCommand():
+    print_string_to_console('<< RESET')
+    c1.delete(0, tk.END)
+    s1.delete(0, tk.END)
+    # e1.config(state="normal")
+    resetDisabledFields()
+
+def randomizeCommand():
+    # st1.delete(0, tk.END)
+    # c1.delete(0, tk.END)
+    # s1.delete(0, tk.END)
+    resetInitialStateField()
+    resetCommand()
+    state_dict = {
+        0: "resources/example_inputs/st1_input.json",
+        1: "resources/example_inputs/st2_input.json",
+        2: "resources/example_inputs/st3_input.json"
+    }
+    choice = random.randint(0, 2)
+    input_file = open(state_dict[choice], "r")
+    input_state_json = input_file.read()
+    print_string_to_console(input_state_json)
+    (state, charge, spin) = translate_input_state_to_input_fields(input_state_json)
+    st1.insert(tk.END, state)
+    c1.insert(tk.END, charge)
+    s1.insert(tk.END, spin)
+
+def translate_input_state_to_input_fields(input_json):
+    input_dictionary = json.loads(input_json)
+    keys = list(input_dictionary.keys())
+    for key in keys:
+        match key:
+            case "charge":
+                charge = input_dictionary['charge']
+            case "spin":
+                spin = input_dictionary['spin']
+            case _:
+                (matter_type, matter_list) = simulation.determine_matter_type(input_json)
+                state = translate_matter_list_to_json(matter_list)
+    print_string_to_console(state)
+    return (state, charge, spin)
+
+def translate_matter_list_to_json(matter_list):
+    # take in stuff of this form
+    # [<atom.Hydrogen object at 0x176950e10>, <atom.Hydrogen object at 0x176950e90>, <atom.Hydrogen object at 0x176950f10>]
+    # and put out stuff of this form
+    # "{\"hydrogen\": 3}"
+    matter_dict = {"one": 1}
+    this_coord = {"x": 0, "y": 0, "z": 0}
+    for matter in matter_list:
+        match matter:
+            case atom.Hydrogen():
+                this_coord["x"] = matter.coordinates.x
+                this_coord["y"] = matter.coordinates.y
+                this_coord["z"] = matter.coordinates.z
+                if "hydrogen" in matter_dict:
+                    og_dict = str(matter_dict["hydrogen"]).replace("]", "")
+                    matter_dict["hydrogen"] = str(og_dict) + "," + str(this_coord) + "]"
+                else:
+                    matter_dict["hydrogen"] = "[" + str(this_coord) + "]"
+    # json_str = json.loads(matter_dict)
+    del matter_dict["one"]
+    matter_dict = str(matter_dict).replace("\"", "")
+    matter_dict = str(matter_dict).replace("\'", "\"")
+    return matter_dict
 
 tk.Button(window, text='RUN', command = retrieveInput).grid(row=action_button_row, column=0)
 
 # TODO - these buttons need assocaited commands
-tk.Button(window, text='RESET').grid(row=action_button_row, column=1)
-tk.Button(window, text='QUIT').grid(row=action_button_row, column=2)
+tk.Button(window, text='RESET', command = resetCommand).grid(row=action_button_row, column=1)
+tk.Button(window, text='RANDOMIZE', command = randomizeCommand).grid(row=action_button_row, column=2)
 
 console.grid(row=console_row, columnspan=width, padx=60, pady=20)
 

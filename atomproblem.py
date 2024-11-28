@@ -26,9 +26,6 @@ def run_driver(state, basis:str="sto3g", charge:int=0, spin:int=0):
     # determine the problem
     if print_all:
         print("** state " + str(state))
-        print("** 0 coords " + str(state[0].coordinates.x))
-        print("** 0 coords " + str(state[0].coordinates.y))
-        print("** 0 coords " + str(state[0].coordinates.z))
         print("** atoms " + str(atoms))
         print("** basis " + str(basis))
         print("** charge " + str(charge))
